@@ -1,6 +1,10 @@
-## 	For this script it will need to have a psf, and a pdb loaded...
-##
-##	Creates the .fix and both .cnst files
+##########################################################################
+##	Preparation of MD Configuration Files and Constraint/Fix Files  ##
+##									##
+##	Portland State University					##
+##	P.I.	: Steve Reichow						##
+##	Author	: Matthew Veter						##
+##########################################################################
 
 proc run {outname} {
 

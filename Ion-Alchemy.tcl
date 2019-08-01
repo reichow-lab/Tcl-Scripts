@@ -1,3 +1,11 @@
+##########################################################################
+##	Transformation of selected atoms to one another			##
+##									##
+##	Portland State University					##
+##	P.I.	: Steve Reichow						##
+##	Author	: Matthew Veter						##
+##########################################################################
+
 puts			"Press '1' and select the ions that you want mutated in the VMD GUI..."
 puts			"Once all of your ions have been selected, start the script by typing, 'run <output name>'"
 

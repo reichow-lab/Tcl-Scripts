@@ -1,9 +1,11 @@
-#########################################################################
-#		Counts the number of select ions within 		#
-#			the pore of the channel				#
-#									#
-#			Author: Matthew Veter				#
-#########################################################################
+##########################################################################
+##		Counts the number of select ions within			##
+##			the pore of the channel				##
+##									##
+##	Portland State University					##
+##	P.I.	: Steve Reichow						##
+##	Author	: Matthew Veter						##
+##########################################################################
 
 
 puts -nonewline "Select ion by entering its name (potassium = POT, sodium = SOD etc...).  "

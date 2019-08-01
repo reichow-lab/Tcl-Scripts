@@ -1,6 +1,9 @@
 ##########################################################################
 ##  An all-encompassing script with different processes of MD analysis	##
-##			Author: Matthew Veter				##
+##									##
+##	Portland State University					##
+##	P.I.	: Steve Reichow						##
+##	Author	: Matthew Veter						##
 ##########################################################################
 
 proc title {{opt 0}} {

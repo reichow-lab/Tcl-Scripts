@@ -1,6 +1,10 @@
-#################################
-#    MD Prep of Config File	#
-#################################
+##########################################################################
+##	Preparation of MD Configuration Files				##
+##									##
+##	Portland State University					##
+##	P.I.	: Steve Reichow						##
+##	Author	: Matthew Veter						##
+##########################################################################
 
 set outname "OUTNAME"
 set all [atomselect top all]
