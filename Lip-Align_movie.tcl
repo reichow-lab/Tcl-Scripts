@@ -6,7 +6,7 @@ proc	Title	{} {
 	#puts		"	Select the molid for the reference and the selection. Uses the first frame from the ref. molid as the reference for the whole system.\n"
 	puts		"	To run '$ align'\n"
 	#puts		"Proc Prot-align: Takes all of the annular lipids around the protein, and aligns them to a single protein chain.\n"
-	puts		"	To run '$ Prot-align <MOLID> <LOGFILE-NAME>'\n"
+	puts		"	To run '$ Prot-align <MOLID> <LOGFILE-NAME> <CHAIN>'\n"
 }
 
 Title
@@ -91,7 +91,7 @@ proc align {} {
 
 
 
-proc	Prot-align	{MOLID logfile} {
+proc	Prot-align	{MOLID logfile {RefChain A}} {
 
 	set	log	[open $logfile w]
 	puts	$log	"RESID\t\tSEGID\t\tLip-Head RMSF\t\tLip-Tail RMSF\t\tLip-Tot RMSF\n"
@@ -102,7 +102,7 @@ proc	Prot-align	{MOLID logfile} {
 
 	set NumFrames		[molinfo $MOLID get numframes]
 
-	set ref_prot		[atomselect $MOLID "protein and chain [lindex $ProtChainList {0}] frame 0"]
+	set ref_prot		[atomselect $MOLID "protein and chain $RefChain frame 0"]
 
 	foreach chain $ProtChainList {
 
