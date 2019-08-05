@@ -66,11 +66,13 @@ proc get-centers	{infile} {
 
 	foreach line $centers {
 
-	dict set LipDic		$i	x	[lindex $line 0]
-	dict set LipDic		$i	y	[lindex $line 1]
-	dict set LipDic		$i	id	[lindex $line 2] 
-
+		dict set LipDic		$i	x	[lindex $line 0]
+		dict set LipDic		$i	y	[lindex $line 1]
+		dict set LipDic		$i	id	[lindex $line 2] 
 	}
+
+	return $LipDic
+
 }
 
 proc get-lipids		{} {
@@ -93,6 +95,6 @@ proc pop-matrix		{} {
 
 proc LipNetwork		{} {
 
-
+set LipDic [get-centers]
 
 }
