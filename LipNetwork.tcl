@@ -44,10 +44,33 @@
 
 source	~/Scripts/TCL/matrix.tcl
 
-proc get-centers	{} {
+# Initialize array that the matrix will be linked to. This will allow us to easily access the matrix values.
 
+array	set	LipArr	{}
 
+# Initialize matrix & link to LipArr.
 
+::struct::matrix	LipMat
+
+LipMat link LipArr
+
+proc get-centers	{infile} {
+
+	set	center_file	[open $infile r]
+
+	set	centers		[split $center_file "\n"]
+
+	close	$center_file
+
+	set	i	0
+
+	foreach line $centers {
+
+	dict set LipDic		$i	x	[lindex $line 0]
+	dict set LipDic		$i	y	[lindex $line 1]
+	dict set LipDic		$i	id	[lindex $line 2] 
+
+	}
 }
 
 proc get-lipids		{} {
@@ -63,6 +86,12 @@ proc lip-analysis	{} {
 }
 
 proc pop-matrix		{} {
+
+
+
+}
+
+proc LipNetwork		{} {
 
 
 
