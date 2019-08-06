@@ -78,6 +78,8 @@ proc LipNetwork		{infile IsoVal} {
 		LipMat	insert	row	$i
 	}
 
+	get_lipid_list
+
 	lip_analysis
 
 	parray	$LipArr
@@ -90,8 +92,8 @@ proc get_centers	{infile} {
 #	therefore there will be 12 "1st-lipid"'s. This dictionary will be used to evaluate where the lipids are at any frame of a trajectory.
 
 	set	center_file	[open $infile r]
-
-	set	DenNum		[expr [llength $center_file] / 12]
+# make sure to add back the division by 12 in the calculation of DenNum when you are done with testing.
+	set	DenNum		[llength $center_file]
 
 	set	centers		[split $center_file "\n"]
 
@@ -118,7 +120,7 @@ proc get_lipid_list	{} {
 #	limit the number of unnecessary calculations made. It checks every frame of the .dcd trajectory, selects lipids within the 
 #	distance and saves a list, containing the indices of the phosphates.
 
-	global NumFrames
+	global NumFrames Phos_Ind
 
 	set Phos_List	""
 
@@ -136,8 +138,6 @@ proc get_lipid_list	{} {
 
 		unset	hold
 	}
-
-	global	Phos_Ind
 
 	set Phos_Ind	[lsort -unique $Phos_List]
 }
@@ -161,11 +161,11 @@ proc lip_analysis	{} {
 
 			animate goto $n
 
-			set	LipCenter_1	[which_center($tail_1)] 				
-			set	LipCenter_2	[which_center($tail_2)]
+			set	LipCenter_1	[which_center	$tail_1] 				
+			set	LipCenter_2	[which_center	$tail_2]
 
-			set	LipOccupy_1	[eval_density($tail_1)]
-			set	LipOccupy_2	[eval_density($tail_2)]
+			set	LipOccupy_1	[eval_density	$tail_1]
+			set	LipOccupy_2	[eval_density	$tail_2]
 
 			if	{$LipOccupy_1 && $LipOccupy_2}	then	{pop_matrix($LipCenter_1,$LipCenter_2)}
 			elseif	{$LipOccupy_1 &&! $LipOccupy_2}	then	{pop_matrix($LipCenter_1,$LipCenter_1)}
@@ -215,6 +215,8 @@ proc eval_density	{lipid_tail} {
 	global IsoLow
 
 	set lipid_index		[$lipid_tail get index]
+
+	set tot_den		0
 
 	foreach ind $lipid_index {
 
