@@ -40,9 +40,20 @@
 #
 #	rep-lipids	- This proc() will be called by Lip-Analysis to keep track of which lipids & frames show a lipid with its tails in the densities.
 #
+#	which_center	- This evaluates which density the lipids  are closest to, and returns the density ID
+#
+#	Eval_Density	- Evaluates the average density that the lipid-tail occupys...if the avg density is >= Iso_Low, then it returns true.
 #
 
 source	~/Scripts/TCL/matrix.tcl
+
+set NumFrames	[molinfo top get numframes]
+
+puts -nonewline	"What is your IsoValue cutoff? "
+flush stdout
+
+set Iso_Max	1
+set Iso_Min	[gets stdin]
 
 # Initialize array that the matrix will be linked to. This will allow us to easily access the matrix values.
 
@@ -53,8 +64,6 @@ array	set	LipArr	{}
 ::struct::matrix	LipMat
 
 LipMat link LipArr
-
-set NumFrames		[molinfo top get numframes]
 
 proc get_centers	{infile} {
 
@@ -68,14 +77,14 @@ proc get_centers	{infile} {
 
 	foreach line $centers {
 
-		dict set DenDic		$i	x	[lindex $line 0]
-		dict set DenDic		$i	y	[lindex $line 1]
-		dict set DenDic		$i	id	[lindex $line 2] 
+		dict set LipDic		$i	x	[lindex $line 0]
+		dict set LipDic		$i	y	[lindex $line 1]
+		dict set LipDic		$i	id	[lindex $line 2] 
 
 		incr i
 	}
 
-	return $DenDic
+	return $LipDic
 
 }
 
@@ -120,17 +129,43 @@ proc lip_analysis	{} {
 		set tail_1	[atomselect top "resid $ResID and segid $SegID and $tail_1_text"]
 		set tail_2	[atomselect top "resid $ResID and segid $SegID and $tail_2_text"]
 
-		set tail_1_IndList [$tail_1 get index]
-		set tail_2_IndList [$tail_2 get index]
-
 		for {set n 0} {$n < $NumFrames} {incr n} {
 
 			animate goto $n
 
-			
+			# taking a break from writing this proc(), instead I am moving onto which_center() which will return a value back to this proc(). 				
 
 		}
 	}
+}
+
+proc which_center	{lipid_tail} {
+
+	global LipDic
+	
+	set hold	1000000 
+
+	set tail_COM	[measure center $lipid_tail]
+
+	set tail_x	lindex $tail_COM	0
+
+	set tail_y	lindex $tail_COM	1
+
+	foreach DEN	[dict keys $LipDic] {
+
+		set den_x	[dict get $LipDic $DEN x]
+		set den_y	[dict get $LipDic $DEN y]
+
+		set dist	[expr {sqrt(pow(($tail_x - $den_x),2) + pow(($tail_y - $den_y),2))}] 
+
+		if {$dist < $hold} {
+
+			set hold	$dist
+
+			set LipDen	[dict get $LipDic $DEN id]}
+
+		else {	set hold	$hold}
+	}	
 }
 
 proc pop_matrix		{} {
@@ -143,6 +178,8 @@ proc pop_matrix		{} {
 
 proc LipNetwork		{infile} {
 
-set DenDic [get-centers $infile]
+global LipDic
+
+set LipDic [get-centers $infile]
 
 }
