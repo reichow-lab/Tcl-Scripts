@@ -44,26 +44,44 @@
 #
 #	eval_density	- Evaluates the average density that the lipid-tail occupys...if the avg density is >= Iso_Low, then it returns true.
 #
-
+################################
 source	~/Scripts/TCL/matrix.tcl
+################################
+#
+#
+proc LipNetwork		{infile IsoVal} {
 
-set NumFrames	[molinfo top get numframes]
+#	This is the main program which is what will be called from the TK-Console.
+#	It initalizes the matrix by inserting rows/colums, as well as starts the analysis.
 
-puts -nonewline	"What is your IsoValue cutoff? "
-flush stdout
+	global	LipDict LipMat LipArr IsoLow NumFrames
 
-set Iso_Max	1
-set Iso_Min	[gets stdin]
+	::struct::matrix	LipMat
 
-# Initialize array that the matrix will be linked to. This will allow us to easily access the matrix values.
+	array	set		LipArr	{}
 
-array	set	LipArr	{}
+	LipMat	link		LipArr
 
-# Initialize matrix & link to LipArr.
+	set	NumFrames	[molinfo top get numframes]
 
-::struct::matrix	LipMat
+	set	IsoLow		$IsoVal
 
-LipMat link LipArr
+	set	ReturnList	[get_centers $infile]
+
+	set	LipDict		[lindex $ReturnList 0]
+
+	set	DenNum		[lindex $ReturnList 1]
+
+	for	{set i 0} {$i < $DenNum} {incr i} {
+
+		LipMat	insert	column	$i
+		LipMat	insert	row	$i
+	}
+
+	lip_analysis
+
+	parray	$LipArr
+}
 
 proc get_centers	{infile} {
 
@@ -72,6 +90,8 @@ proc get_centers	{infile} {
 #	therefore there will be 12 "1st-lipid"'s. This dictionary will be used to evaluate where the lipids are at any frame of a trajectory.
 
 	set	center_file	[open $infile r]
+
+	set	DenNum		[expr [llength $center_file] / 12]
 
 	set	centers		[split $center_file "\n"]
 
@@ -88,7 +108,7 @@ proc get_centers	{infile} {
 		incr i
 	}
 
-	return $LipDict
+	return [list $LipDict $DenNum]
 
 }
 
@@ -190,7 +210,7 @@ proc which_center	{lipid_tail} {
 	return	$LipDen	
 }
 
-proc eval_density {lipid_tail} {
+proc eval_density	{lipid_tail} {
 
 	global IsoLow
 
@@ -223,12 +243,4 @@ proc pop_matrix		{den_id_1 den_id_2} {
 	LipMat set cell $den_id_1 $den_id_2 [expr $LipArr($den_id_1,$den_id_2) + 1]
 
 	LipMat set cell $den_id_2 $den_id_1 [expr $LipArr($den_id_2,$den_id_1) + 1]
-}
-
-# This is the main proc (program) that calls other procs.
-
-proc LipNetwork		{infile} {
-
-
-
 }
