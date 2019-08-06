@@ -54,7 +54,9 @@ array	set	LipArr	{}
 
 LipMat link LipArr
 
-proc get-centers	{infile} {
+set NumFrames		[molinfo top get numframes]
+
+proc get_centers	{infile} {
 
 	set	center_file	[open $infile r]
 
@@ -66,35 +68,81 @@ proc get-centers	{infile} {
 
 	foreach line $centers {
 
-		dict set LipDic		$i	x	[lindex $line 0]
-		dict set LipDic		$i	y	[lindex $line 1]
-		dict set LipDic		$i	id	[lindex $line 2] 
+		dict set DenDic		$i	x	[lindex $line 0]
+		dict set DenDic		$i	y	[lindex $line 1]
+		dict set DenDic		$i	id	[lindex $line 2] 
+
+		incr i
 	}
 
-	return $LipDic
+	return $DenDic
 
 }
 
-proc get-lipids		{} {
+proc get_lipid_list	{} {
+
+	global NumFrames
+
+	set Phos_List	""
+
+	for {set n 0} {$n < $NumFrames} {incr n} {
+
+		animate goto $n
+
+		set lipid	[atomselect top "resname DMPC and same residue as within 15 of (protein and resid 84 215)"]
+
+		$lipid			set beta 1
+
+		set	hold		[[atomselect top "name P and beta = 1"] get index]
+
+		set	Phos_List	[concat [lindex $Phos_List] [lindex $hold]]
+
+		unset	hold
+	}
+
+	global	Phos_Ind
+
+	set Phos_Ind	[lsort -unique $Phos_List]
+}
+
+proc lip_analysis	{} {
+
+	global Phos_Ind NumFrames
+	
+	set tail_1_text "lipid and (name C22 to C29 C210 to C214)"
+	set tail_2_text "lipid and (name C32 to C39 C310 to C316)"
+
+	foreach index $Phos_Ind {
+
+		set ResID	[$index get resid]
+		set SegID	[$index get segid]
+
+		set tail_1	[atomselect top "resid $ResID and segid $SegID and $tail_1_text"]
+		set tail_2	[atomselect top "resid $ResID and segid $SegID and $tail_2_text"]
+
+		set tail_1_IndList [$tail_1 get index]
+		set tail_2_IndList [$tail_2 get index]
+
+		for {set n 0} {$n < $NumFrames} {incr n} {
+
+			animate goto $n
+
+			
+
+		}
+	}
+}
+
+proc pop_matrix		{} {
 
 
 
 }
 
-proc lip-analysis	{} {
+# This is the main proc (program) that calls other procs.
 
+proc LipNetwork		{infile} {
 
-
-}
-
-proc pop-matrix		{} {
-
-
-
-}
-
-proc LipNetwork		{} {
-
-set LipDic [get-centers]
+set DenDic [get-centers $infile]
 
 }
