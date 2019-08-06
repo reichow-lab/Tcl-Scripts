@@ -187,6 +187,8 @@ proc lip_analysis	{} {
 
 		incr	i
 	}
+
+	puts "*"
 }
 
 proc which_center	{lipid_tail} {
