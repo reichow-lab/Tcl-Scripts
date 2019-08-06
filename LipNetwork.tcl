@@ -45,7 +45,7 @@
 #	eval_density	- Evaluates the average density that the lipid-tail occupys...if the avg density is >= Iso_Low, then it returns true.
 #
 ################################
-source	~/Scripts/TCL/matrix.tcl
+source	~/Scripts/TCL/Tcl-Scripts/matrix.tcl
 ################################
 #
 #
