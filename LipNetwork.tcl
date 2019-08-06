@@ -77,14 +77,14 @@ proc get_centers	{infile} {
 
 	foreach line $centers {
 
-		dict set LipDic		$i	x	[lindex $line 0]
-		dict set LipDic		$i	y	[lindex $line 1]
-		dict set LipDic		$i	id	[lindex $line 2] 
+		dict set LipDict		$i	x	[lindex $line 0]
+		dict set LipDict		$i	y	[lindex $line 1]
+		dict set LipDict		$i	id	[lindex $line 2] 
 
 		incr i
 	}
 
-	return $LipDic
+	return $LipDict
 
 }
 
@@ -141,7 +141,7 @@ proc lip_analysis	{} {
 
 proc which_center	{lipid_tail} {
 
-	global LipDic
+	global LipDict
 	
 	set hold	1000000 
 
@@ -151,10 +151,10 @@ proc which_center	{lipid_tail} {
 
 	set tail_y	lindex $tail_COM	1
 
-	foreach DEN	[dict keys $LipDic] {
+	foreach DEN	[dict keys $LipDict] {
 
-		set den_x	[dict get $LipDic $DEN x]
-		set den_y	[dict get $LipDic $DEN y]
+		set den_x	[dict get $LipDict $DEN x]
+		set den_y	[dict get $LipDict $DEN y]
 
 		set dist	[expr {sqrt(pow(($tail_x - $den_x),2) + pow(($tail_y - $den_y),2))}] 
 
@@ -162,7 +162,7 @@ proc which_center	{lipid_tail} {
 
 			set hold	$dist
 
-			set LipDen	[dict get $LipDic $DEN id]}
+			set LipDen	[dict get $LipDict $DEN id]}
 
 		else {	set hold	$hold}
 	}	
@@ -178,8 +178,8 @@ proc pop_matrix		{} {
 
 proc LipNetwork		{infile} {
 
-global LipDic
+global LipDict
 
-set LipDic [get-centers $infile]
+set LipDict [get-centers $infile]
 
 }
