@@ -67,6 +67,10 @@ LipMat link LipArr
 
 proc get_centers	{infile} {
 
+#	This proc() takes a text file that contains the (x,y) coordinates of the lipid densities that are resolved by CryoEM (or any lipid density).
+#	These coordinates are used to fill a dictionary with the (x,y) pair, and the lipid ID (arbitrarily defined); there is 12-fold symmetry, 
+#	therefore there will be 12 "1st-lipid"'s. This dictionary will be used to evaluate where the lipids are at any frame of a trajectory.
+
 	set	center_file	[open $infile r]
 
 	set	centers		[split $center_file "\n"]
@@ -89,6 +93,10 @@ proc get_centers	{infile} {
 }
 
 proc get_lipid_list	{} {
+
+#	This proc() generates a list of lipids that ever come within a certain distance of the protein. This is done in order to 
+#	limit the number of unnecessary calculations made. It checks every frame of the .dcd trajectory, selects lipids within the 
+#	distance and saves a list, containing the indices of the phosphates.
 
 	global NumFrames
 
@@ -133,8 +141,13 @@ proc lip_analysis	{} {
 
 			animate goto $n
 
-			# taking a break from writing this proc(), instead I am moving onto which_center() which will return a value back to this proc(). 				
+			set LipCenter_1	[which_center($tail_1)] 				
+			set LipCenter_2	[which_center($tail_2)]
 
+			set LipOccupy_1	[eval_density($tail_1)]
+			set LipOccupy_2 [eval_density($tail_2)]
+
+			# finished here...now you need to write the conditionals of how they'll be addded to pop_matrix()...
 		}
 	}
 }
@@ -147,9 +160,9 @@ proc which_center	{lipid_tail} {
 
 	set tail_COM	[measure center $lipid_tail]
 
-	set tail_x	lindex $tail_COM	0
+	set tail_x	[lindex $tail_COM	0]
 
-	set tail_y	lindex $tail_COM	1
+	set tail_y	[lindex $tail_COM	1]
 
 	foreach DEN	[dict keys $LipDict] {
 
@@ -164,8 +177,37 @@ proc which_center	{lipid_tail} {
 
 			set LipDen	[dict get $LipDict $DEN id]}
 
-		else {	set hold	$hold}
-	}	
+		else {	set hold	$hold
+		}
+	}
+
+	return	$LipDen	
+}
+
+proc eval_density	{lipid_tail} {
+
+	global IsoLow
+
+	set lipid_index		[$lipid_tail get index]
+
+	foreach ind $lipid_index {
+
+		set lip_atom	[atomselect top "index $ind"]
+
+		set tot_den	[expr $tot_den + [$lip_atom get interpvol0]]
+	}
+
+	set avg_den		[expr $tot_den / [llength $lipid_index]]
+
+	if {$avg_den >= $IsoLow} {	
+
+		return true 
+	}
+	else	{
+
+		return false
+	}
+
 }
 
 proc pop_matrix		{} {
