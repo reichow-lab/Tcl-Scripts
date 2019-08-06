@@ -61,7 +61,7 @@ proc LipNetwork		{infile IsoVal} {
 	array	set		LipArr	{}
 
 	LipMat	link		LipArr
-
+	
 	set	NumFrames	[molinfo top get numframes]
 
 	set	IsoLow		$IsoVal
@@ -71,7 +71,7 @@ proc LipNetwork		{infile IsoVal} {
 	set	LipDict		[lindex $ReturnList 0]
 
 	set	DenNum		[lindex $ReturnList 1]
-
+	
 	for	{set i 0} {$i < $DenNum} {incr i} {
 
 		LipMat	insert	column	$i
@@ -79,10 +79,10 @@ proc LipNetwork		{infile IsoVal} {
 	}
 
 	get_lipid_list
-
+	
 	lip_analysis
 
-	parray	$LipArr
+	parray	LipArr
 }
 
 proc get_centers	{infile} {
@@ -92,14 +92,17 @@ proc get_centers	{infile} {
 #	therefore there will be 12 "1st-lipid"'s. This dictionary will be used to evaluate where the lipids are at any frame of a trajectory.
 
 	set	center_file	[open $infile r]
-# make sure to add back the division by 12 in the calculation of DenNum when you are done with testing.
-	set	DenNum		[llength $center_file]
 
-	set	centers		[split $center_file "\n"]
+	set	centers_read	[read -nonewline $center_file]
 
 	close	$center_file
 
-	set	i	0
+	set	centers		[split $centers_read "\n"]
+
+#	set	DenNum		[expr [expr [llength $centers] - 1] / 12] 
+	set	DenNum		13
+
+	set	i		0
 
 	foreach line $centers {
 
@@ -149,14 +152,18 @@ proc lip_analysis	{} {
 	set tail_1_text "lipid and (name C22 to C29 C210 to C214)"
 	set tail_2_text "lipid and (name C32 to C39 C310 to C316)"
 
+	set ind_percent [expr {round([llength $Phos_Ind] / ([expr [llength $Phos_Ind] / 20]))}]
+	
+	set i		0
+
 	foreach index $Phos_Ind {
 
-		set ResID	[$index get resid]
-		set SegID	[$index get segid]
-
+		set ResID	[[atomselect top "index $index"] get resid]
+		set SegID	[[atomselect top "index $index"] get segid]
+		
 		set tail_1	[atomselect top "resid $ResID and segid $SegID and $tail_1_text"]
 		set tail_2	[atomselect top "resid $ResID and segid $SegID and $tail_2_text"]
-
+		
 		for {set n 0} {$n < $NumFrames} {incr n} {
 
 			animate goto $n
@@ -167,14 +174,19 @@ proc lip_analysis	{} {
 			set	LipOccupy_1	[eval_density	$tail_1]
 			set	LipOccupy_2	[eval_density	$tail_2]
 
-			if	{$LipOccupy_1 && $LipOccupy_2}	then	{pop_matrix($LipCenter_1,$LipCenter_2)}
-			elseif	{$LipOccupy_1 &&! $LipOccupy_2}	then	{pop_matrix($LipCenter_1,$LipCenter_1)}
-			elseif	{$LipOccupy_2 &&! $LipOccupy_1}	then	{pop_matrix($LipCenter_2,$LipCenter_2)}
-			else	{glob}
-		}
-	}
+			if		{$LipOccupy_1 && $LipOccupy_2}	then	{pop_matrix $LipCenter_1 $LipCenter_2
 
-	puts "*"
+			} elseif	{$LipOccupy_1 &&! $LipOccupy_2}	then	{pop_matrix $LipCenter_1 $LipCenter_1
+
+			} elseif	{$LipOccupy_2 &&! $LipOccupy_1}	then	{pop_matrix $LipCenter_2 $LipCenter_2
+
+			} else	{variable donothing 0}	
+		}
+
+		if {($i % $ind_percent) == 0} {puts -nonewline "*"}
+
+		incr	i
+	}
 }
 
 proc which_center	{lipid_tail} {
@@ -200,9 +212,9 @@ proc which_center	{lipid_tail} {
 
 			set hold	$dist
 
-			set LipDen	[dict get $LipDict $DEN id]}
+			set LipDen	[expr [dict get $LipDict $DEN id] - 1]
 
-		else {	set hold	$hold
+		} else {	set hold	$hold
 
 		}
 	}
@@ -230,8 +242,8 @@ proc eval_density	{lipid_tail} {
 	if {$avg_den >= $IsoLow} {	
 
 		return true 
-	}
-	else	{
+
+	} else	{
 
 		return false
 	}
