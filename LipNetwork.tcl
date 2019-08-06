@@ -42,7 +42,7 @@
 #
 #	which_center	- This evaluates which density the lipids  are closest to, and returns the density ID
 #
-#	Eval_Density	- Evaluates the average density that the lipid-tail occupys...if the avg density is >= Iso_Low, then it returns true.
+#	eval_density	- Evaluates the average density that the lipid-tail occupys...if the avg density is >= Iso_Low, then it returns true.
 #
 
 source	~/Scripts/TCL/matrix.tcl
@@ -141,15 +141,20 @@ proc lip_analysis	{} {
 
 			animate goto $n
 
-			set LipCenter_1	[which_center($tail_1)] 				
-			set LipCenter_2	[which_center($tail_2)]
+			set	LipCenter_1	[which_center($tail_1)] 				
+			set	LipCenter_2	[which_center($tail_2)]
 
-			set LipOccupy_1	[eval_density($tail_1)]
-			set LipOccupy_2 [eval_density($tail_2)]
+			set	LipOccupy_1	[eval_density($tail_1)]
+			set	LipOccupy_2	[eval_density($tail_2)]
 
-			# finished here...now you need to write the conditionals of how they'll be addded to pop_matrix()...
+			if	{$LipOccupy_1 && $LipOccupy_2}	then	{pop_matrix($LipCenter_1,$LipCenter_2)}
+			elseif	{$LipOccupy_1 &&! $LipOccupy_2}	then	{pop_matrix($LipCenter_1,$LipCenter_1)}
+			elseif	{$LipOccupy_2 &&! $LipOccupy_1}	then	{pop_matrix($LipCenter_2,$LipCenter_2)}
+			else	{glob}
 		}
 	}
+
+	puts "*"
 }
 
 proc which_center	{lipid_tail} {
@@ -178,13 +183,14 @@ proc which_center	{lipid_tail} {
 			set LipDen	[dict get $LipDict $DEN id]}
 
 		else {	set hold	$hold
+
 		}
 	}
 
 	return	$LipDen	
 }
 
-proc eval_density	{lipid_tail} {
+proc eval_density {lipid_tail} {
 
 	global IsoLow
 
@@ -210,18 +216,19 @@ proc eval_density	{lipid_tail} {
 
 }
 
-proc pop_matrix		{} {
+proc pop_matrix		{den_id_1 den_id_2} {
 
+	global LipMat LipArr
 
+	LipMat set cell $den_id_1 $den_id_2 [expr $LipArr($den_id_1,$den_id_2) + 1]
 
+	LipMat set cell $den_id_2 $den_id_1 [expr $LipArr($den_id_2,$den_id_1) + 1]
 }
 
 # This is the main proc (program) that calls other procs.
 
 proc LipNetwork		{infile} {
 
-global LipDict
 
-set LipDict [get-centers $infile]
 
 }
