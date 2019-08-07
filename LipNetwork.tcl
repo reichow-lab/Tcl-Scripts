@@ -49,12 +49,12 @@ source	~/Scripts/TCL/Tcl-Scripts/matrix.tcl
 ################################
 #
 #
-proc LipNetwork		{infile IsoVal} {
+proc LipNetwork		{infile outfile IsoVal} {
 
 #	This is the main program which is what will be called from the TK-Console.
 #	It initalizes the matrix by inserting rows/colums, as well as starts the analysis.
 
-	global	LipDict LipMat LipArr IsoLow NumFrames
+	global	LipDict LipMat LipArr IsoLow NumFrames DenNum
 
 	::struct::matrix	LipMat
 
@@ -82,7 +82,9 @@ proc LipNetwork		{infile IsoVal} {
 	
 	lip_analysis
 
-	parray	LipArr
+	pop_matrix 0 0 true $outfile
+
+	puts	"final matrix written to $outfile"
 }
 
 proc get_centers	{infile} {
@@ -131,7 +133,7 @@ proc get_lipid_list	{} {
 
 		animate goto $n
 
-		set lipid	[atomselect top "resname DMPC and same residue as within 15 of (protein and resid 84 215)"]
+		set lipid	[atomselect top "resname DMPC and same residue as within 10 of (protein and resid 84 215)"]
 
 		$lipid			set beta 1
 
@@ -252,11 +254,34 @@ proc eval_density	{lipid_tail} {
 
 }
 
-proc pop_matrix		{den_id_1 den_id_2} {
+proc pop_matrix		{den_id_1 den_id_2 {writematrix false} {outfile false}} {
 
-	global LipMat LipArr
+	global LipMat LipArr DenNum
 
-	LipMat set cell $den_id_1 $den_id_2 [expr $LipArr($den_id_1,$den_id_2) + 1]
+	if {$writematrix == false} {
 
-	LipMat set cell $den_id_2 $den_id_1 [expr $LipArr($den_id_2,$den_id_1) + 1]
+		LipMat set cell $den_id_1 $den_id_2 [expr $LipArr($den_id_1,$den_id_2) + 1]
+
+		LipMat set cell $den_id_2 $den_id_1 [expr $LipArr($den_id_2,$den_id_1) + 1]
+
+	} elseif {$writematrix == true} {
+
+		set outf	[open $outfile w]
+
+	# row: j, column: i ... tcl matrix object has the form (column,row) which is distinct from matrices in python
+
+		for {set i 0} {$j < $DenNum} {incr i} {
+	
+			for {set j 0} {$i < $DenNum} {incr j} {
+
+				set	val	$LipArr($i,$j)
+
+				puts	-nonewline	$outf	"$Val"
+			}
+
+			puts	$outf	"\n"
+		} 
+
+	}
+	
 }
