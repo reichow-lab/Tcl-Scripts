@@ -30,7 +30,7 @@
 #
 ################################
 source	~/Scripts/TCL/Tcl-Scripts/matrix.tcl
-source	~/Scripts/TCL/Tcl-Scripts/Lip-Align_movie.tcl
+source	~/Scripts/TCL/Tcl-Scripts/Lip-Analysis-Tools.tcl
 ################################
 #
 proc LipNetwork		{infile outfile IsoVal} {
