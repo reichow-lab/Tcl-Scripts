@@ -1,4 +1,4 @@
-proc	Title	{{v "-v"}} {
+proc	Title	{{v ""}} {
 
 	if {$v == "-v"} {
 		puts		"Proc Lip-align:	Takes the users selection of any lipids, and aligns them together to a reference lipid.\n"

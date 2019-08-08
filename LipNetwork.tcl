@@ -77,6 +77,8 @@ proc LipNetwork		{infile outfile IsoVal} {
 	pop_matrix 0 0 true $outfile
 
 	puts	"final matrix written to $outfile"
+
+	LipMat	destroy
 }
 
 proc get_centers	{infile} {
@@ -144,7 +146,7 @@ proc lip_analysis	{} {
 	
 	set tail_1_text "lipid and (name C22 to C29 C210 to C214)"
 	set tail_2_text "lipid and (name C32 to C39 C310 to C316)"
-	
+		
 	set ind_percent [expr {round([llength $Phosp_Ind] / ([expr [llength $Phosp_Ind] / 20]))}]
 		
 	set i		0
