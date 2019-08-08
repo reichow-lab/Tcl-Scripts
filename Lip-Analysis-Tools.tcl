@@ -1,12 +1,12 @@
 proc	Title	{} {
-	#puts		"Proc Lip-align: Takes the users selection of any lipids, and aligns them together to a reference lipid.\n"
-	#puts		"	Press '1' and select the lipids that you want aligned in the VMD GUI...\n"
-	puts		"	To run '$ Lip-align <MOLID>'\n"
-	#puts		"Proc align: aligns trajectory relative to the protein...i.e. aligns the protein to itself or a separate protein.\n"
-	#puts		"	Select the molid for the reference and the selection. Uses the first frame from the ref. molid as the reference for the whole system.\n"
-	puts		"	To run '$ align'\n"
-	#puts		"Proc Prot-align: Takes all of the annular lipids around the protein, and aligns them to a single protein chain.\n"
-	puts		"	To run '$ Prot-align <MOLID> <LOGFILE-NAME> <CHAIN>'\n"
+	puts		"Proc Lip-align:	Takes the users selection of any lipids, and aligns them together to a reference lipid.\n"
+	puts		"			Press '1' and select the lipids that you want aligned in the VMD GUI...\n"
+	puts		"			To run '$ Lip-align <MOLID>'\n"
+	puts		"Proc align: 		aligns trajectory relative to the protein...i.e. aligns the protein to itself or a separate protein.\n"
+	puts		"			Select the molid for the reference and the selection. Uses the first frame from the ref. molid as the reference for the whole system.\n"
+	puts		"			To run '$ align'\n"
+	puts		"Proc Prot-align: 	Takes all of the annular lipids around the protein, and aligns them to a single protein chain.\n"
+	puts		"			To run '$ Prot-align <MOLID> <LOGFILE-NAME> <CHAIN>'\n"
 }
 
 Title

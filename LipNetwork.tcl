@@ -30,7 +30,7 @@
 #
 ################################
 source	~/Scripts/TCL/Tcl-Scripts/matrix.tcl
-#source	~/Scripts/TCL/Tcl-Scripts/Lip-Align_movie.tcl
+source	~/Scripts/TCL/Tcl-Scripts/Lip-Align_movie.tcl
 ################################
 #
 proc LipNetwork		{infile outfile IsoVal} {
@@ -116,9 +116,9 @@ proc get_lipid_list	{} {
 #	limit the number of unnecessary calculations made. It checks every frame of the .dcd trajectory, selects lipids within the 
 #	distance and saves a list, containing the indices of the phosphates.
 
-	global NumFrames Phos_Ind
+	global NumFrames Phosp_Ind
 
-	set Phos_List	""
+	set Phosp_List	""
 
 	for {set n 0} {$n < $NumFrames} {incr n} {
 
@@ -130,26 +130,26 @@ proc get_lipid_list	{} {
 
 		set	hold		[[atomselect top "name P and beta = 1"] get index]
 
-		set	Phos_List	[concat [lindex $Phos_List] [lindex $hold]]
+		set	Phosp_List	[concat [lindex $Phosp_List] [lindex $hold]]
 
 		unset	hold
 	}
 
-	set Phos_Ind	[lsort -unique $Phos_List]
+	set Phosp_Ind	[lsort -unique $Phosp_List]
 }
 
 proc lip_analysis	{} {
 
-	global Phos_Ind NumFrames
+	global Phosp_Ind NumFrames
 	
 	set tail_1_text "lipid and (name C22 to C29 C210 to C214)"
 	set tail_2_text "lipid and (name C32 to C39 C310 to C316)"
-	puts "debug 1"
-	set ind_percent [expr {round([llength $Phos_Ind] / ([expr [llength $Phos_Ind] / 20]))}]
-	puts "debug 2"	
+	
+	set ind_percent [expr {round([llength $Phosp_Ind] / ([expr [llength $Phosp_Ind] / 20]))}]
+		
 	set i		0
 
-	foreach index $Phos_Ind {
+	foreach index $Phosp_Ind {
 
 		set ResID	[[atomselect top "index $index"] get resid]
 		set SegID	[[atomselect top "index $index"] get segid]
@@ -231,9 +231,9 @@ proc eval_density	{lipid_tail} {
 
 		set tot_den	[expr $tot_den + [$lip_atom get interpvol0]]
 	}
-	puts "debug at avg_den"
+	
 	set avg_den		[expr $tot_den / [llength $lipid_index]]
-	puts "debug past avg_den"
+	
 	if {$avg_den >= $IsoLow} {	
 
 		return true 
