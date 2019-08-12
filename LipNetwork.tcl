@@ -33,7 +33,7 @@ source	~/Scripts/TCL/Tcl-Scripts/matrix.tcl
 source	~/Scripts/TCL/Tcl-Scripts/Lip-Analysis-Tools.tcl
 ################################
 #
-proc LipNetwork		{infile outfile IsoVal} {
+proc LipNetwork		{infile outfile {IsoVal "none"}} {
 
 #	This is the main program which is what will be called from the TK-Console.
 #	It initalizes the matrix by inserting rows/colums, as well as starts the analysis.
@@ -142,7 +142,7 @@ proc get_lipid_list	{} {
 
 proc lip_analysis	{} {
 
-	global Phosp_Ind NumFrames
+	global Phosp_Ind NumFrames IsoLow
 	
 	set tail_1_text "lipid and (name C22 to C29 C210 to C214)"
 	set tail_2_text "lipid and (name C32 to C39 C310 to C316)"
@@ -169,13 +169,21 @@ proc lip_analysis	{} {
 			set	LipOccupy_1	[eval_density	$tail_1]
 			set	LipOccupy_2	[eval_density	$tail_2]
 
-			if		{$LipOccupy_1 && $LipOccupy_2}	then	{pop_matrix $LipCenter_1 $LipCenter_2
+			if		{$IsoLow != "none"} {
 
-			} elseif	{$LipOccupy_1 &&! $LipOccupy_2}	then	{pop_matrix $LipCenter_1 $LipCenter_1
+				set	LipOccupy_1	[eval_density	$tail_1]
+				set	LipOccupy_2	[eval_density	$tail_2]
 
-			} elseif	{$LipOccupy_2 &&! $LipOccupy_1}	then	{pop_matrix $LipCenter_2 $LipCenter_2
+				if		{$LipOccupy_1 && $LipOccupy_2}	then	{pop_matrix $LipCenter_1 $LipCenter_2
 
-			} else	{variable donothing 0}	
+				} elseif	{$LipOccupy_1 &&! $LipOccupy_2}	then	{pop_matrix $LipCenter_1 $LipCenter_1
+
+				} elseif	{$LipOccupy_2 &&! $LipOccupy_1}	then	{pop_matrix $LipCenter_2 $LipCenter_2
+
+				} else	{variable donothing 0}
+
+			} elseif	{$IsoLow == "none"} then	{pop_matrix $LipCenter_1 $LipCenter_2}
+	
 		}
 
 		if {($i % $ind_percent) == 0} {puts -nonewline "*"}
