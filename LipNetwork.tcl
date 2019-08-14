@@ -32,34 +32,9 @@
 source	~/Scripts/TCL/Tcl-Scripts/matrix.tcl
 source	~/Scripts/TCL/Tcl-Scripts/Lip-Analysis-Tools.tcl
 ################################
-#
 
-proc    Title_2   {{v ""}} {
-  
-        if {$v == "-v"} {
 
-		Title -v
-
-                puts		"Proc LipNetwork:	Using the centers file, containing the (x,y) coordinates of the annular '\n'
-							lipid densities (from MD or CryoEM) and calculates the interconnectivity 
-							of the lipid tails within the densities. This script creates a 'transition
-							matrix' that shows when any two lipid densities are occupied by a single 
-							lipid. The default minimum IsoLow is 0, meaning the density does not matter 
-							and thus assumed that a tail is always assigned to a lipid density 'region'.
-							In order for this program to work, the volume file (.mrc or .dx) must be
-							loaded into the top molecule (the one containing your .dcd. Furthermore, 
-							you need to run 'align' and 'Prot-align' to ensure the protein/lipids are 
-							at there best-fit to each other."
-
-        } else {
-
-		Title
-
-                puts		"			To run '$ LipNetwork <CENTER FILE> <OUTFILE> <ISO-THRESHOLD (default: 0)>'\n"
-        }
-}
-
-Title_2
+Title
 
 proc LipNetwork		{infile outfile {IsoVal "none"}} {
 
@@ -107,6 +82,8 @@ proc LipNetwork		{infile outfile {IsoVal "none"}} {
 	puts	"final matrix written to $outfile"
 
 	LipMat	destroy
+
+	Title
 }
 
 proc get_centers	{infile} {
