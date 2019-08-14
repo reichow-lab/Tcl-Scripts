@@ -34,9 +34,12 @@ source	~/Scripts/TCL/Tcl-Scripts/Lip-Analysis-Tools.tcl
 ################################
 #
 
-proc    Title   {{v ""}} {
+proc    Title_2   {{v ""}} {
   
         if {$v == "-v"} {
+
+		Title -v
+
                 puts		"Proc LipNetwork:	Using the centers file, containing the (x,y) coordinates of the annular '\n'
 							lipid densities (from MD or CryoEM) and calculates the interconnectivity 
 							of the lipid tails within the densities. This script creates a 'transition
@@ -50,9 +53,13 @@ proc    Title   {{v ""}} {
 
         } else {
 
+		Title
+
                 puts		"			To run '$ LipNetwork <CENTER FILE> <OUTFILE> <ISO-THRESHOLD (default: 0)>'\n"
         }
 }
+
+Title_2
 
 proc LipNetwork		{infile outfile {IsoVal "none"}} {
 
