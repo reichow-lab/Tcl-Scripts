@@ -171,9 +171,6 @@ proc lip_analysis	{} {
 			set	LipCenter_1	[which_center	$tail_1] 				
 			set	LipCenter_2	[which_center	$tail_2]
 
-			set	LipOccupy_1	[eval_density	$tail_1]
-			set	LipOccupy_2	[eval_density	$tail_2]
-
 			if		{$IsoLow != "none"} {
 
 				set	LipOccupy_1	[eval_density	$tail_1]
