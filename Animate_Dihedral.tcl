@@ -25,7 +25,7 @@ proc dihed_animator {} {
 
 	set numframes [molinfo top get numframes]
 
-	for {set i 0} {$i < $numframes} {incr i} {
+	for {set i [expr $numframes - 1]} {$i >= 0} {incr i -1} {
 
 		animate goto $i
 
@@ -33,43 +33,17 @@ proc dihed_animator {} {
 
 		if {$OR} {
 
-			if {$angle > $lower_limit || $angle < $upper_limit} {lappend frame_list $i}
+			if {$angle > $lower_limit || $angle < $upper_limit} {continue
+			} else {animate delete beg $i end $i top}
 
 		} else {
 
-			if {$angle > $lower_limit && $angle < $upper_limit} {lappend frame_list $i}
+			if {$angle > $lower_limit && $angle < $upper_limit} {continue
+			} else {animate delete beg $i end $i top}
 		}
 
 		unset angle
 	}
 
-	set dcd_len [llength $frame_list]
-
-	puts "The expected number of frames is $dcd_len]"
-
-	unset indices upper_limit lower_limit
-
-	for {set i [expr $numframes -1]} {$i >= 0} {incr i -1} {
-
-		if {[lsearch -exact $frame_list $i] >= 0} {continue
-		} else {animate delete beg $i end $i top
-		}
-	}
-
-	set sys [atomselect top all]
-
-	set ref_frame [atomselect top "name $name_list" frame 0]
-
-	for {set i 0} {$i < $dcd_len} {incr i} {
-
-		animate goto $i
-
-		set align_frame [atomselect top "name $name_list"]
-
-		set trans_matrix [measure fit $align_frame $ref_frame]
-
-		$sys move $trans_matrix
-	}
-
-	unset sys ref_frame name_list
+	unset indices upper_limit lower_limit name_list
 }
