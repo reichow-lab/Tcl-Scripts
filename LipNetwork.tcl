@@ -186,10 +186,6 @@ proc lip_analysis	{difsel} {
 
 				if		{$LipOccupy_1 && $LipOccupy_2}	then	{pop_matrix $LipCenter_1 $LipCenter_2
 
-				} elseif	{$LipOccupy_1 &&! $LipOccupy_2}	then	{pop_matrix $LipCenter_1 $LipCenter_1
-
-				} elseif	{$LipOccupy_2 &&! $LipOccupy_1}	then	{pop_matrix $LipCenter_2 $LipCenter_2
-
 				} else	{variable donothing 0}
 
 			} elseif	{$IsoLow == "none"} then	{pop_matrix $LipCenter_1 $LipCenter_2}
