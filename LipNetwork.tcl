@@ -36,7 +36,7 @@ source	~/Scripts/TCL/Tcl-Scripts/Lip-Analysis-Tools.tcl
 
 Title
 
-proc LipNetwork		{infile outfile {IsoVal "none"}} {
+proc LipNetwork		{infile outfile {IsoVal "none"} {difsel false}} {
 
 #	This is the main program which is what will be called from the TK-Console.
 #	It initalizes the matrix by inserting rows/colums, as well as starts the analysis.
@@ -49,7 +49,7 @@ proc LipNetwork		{infile outfile {IsoVal "none"}} {
 #		NumFrames	Number of frames in the simulation
 #		DenNum	:	Number of lipid densities (centers)	
 
-	global	LipDict LipMat LipArr IsoLow NumFrames DenNum
+	global	LipDict LipMat LipArr IsoLow NumFrames DenNum 
 
 	::struct::matrix	LipMat
 
@@ -75,7 +75,7 @@ proc LipNetwork		{infile outfile {IsoVal "none"}} {
 
 	get_lipid_list
 	
-	lip_analysis
+	lip_analysis $difsel
 
 	pop_matrix 0 0 true $outfile
 
@@ -145,13 +145,21 @@ proc get_lipid_list	{} {
 	set Phosp_Ind	[lsort -unique $Phosp_List]
 }
 
-proc lip_analysis	{} {
+proc lip_analysis	{difsel} {
 
 	global Phosp_Ind NumFrames IsoLow
+
+	if {!$difsel} { 
 	
-	set tail_1_text "lipid and (name C22 to C29 C210 to C214)"
-	set tail_2_text "lipid and (name C32 to C39 C310 to C316)"
+		set tail_1_text "lipid and (name C22 to C29 C210 to C214)"
+		set tail_2_text "lipid and (name C32 to C39 C310 to C316)"
 		
+	} elseif {$difsel} {
+
+		set tail_1_text "lipid and (name C21 C22)"
+		set tail_2_text "lipid and (name C31 C32)"
+	}
+
 	set ind_percent [expr {round([llength $Phosp_Ind] / ([expr [llength $Phosp_Ind] / 20]))}]
 		
 	set i		0
