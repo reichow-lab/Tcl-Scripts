@@ -1,5 +1,5 @@
 ##########################################################################
-##  An all-encompassing script with different processes of MD analysis	##
+##  A comprehensive script with different processes of MD analysis	##
 ##									##
 ##	Portland State University					##
 ##	P.I.	: Steve Reichow						##
@@ -18,7 +18,7 @@ proc title {{opt 0}} {
 	puts "<dihedral_z>      Measure the dihedral angle versus z-coord of a selection"
 	puts "<cent_o_mass {0}> Measure the center of mass of the selection."
 	puts "<ave_pos>         Move the atoms of the selection to their average position"
-	puts "<title {bool}>    To show these commands again."
+	puts "<title {0}>    To show these commands again."
 }
 title
 
