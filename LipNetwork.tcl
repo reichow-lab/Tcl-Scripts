@@ -36,7 +36,7 @@ source	~/Scripts/TCL/Tcl-Scripts/Lip-Analysis-Tools.tcl
 
 Title
 
-proc LipNetwork		{infile outfile {IsoVal "none"} {difsel false}} {
+proc LipNetwork		{infile outfile CarbonThreshold {IsoVal "none"} {difsel false}} {
 
 #	This is the main program which is what will be called from the TK-Console.
 #	It initalizes the matrix by inserting rows/colums, as well as starts the analysis.
@@ -48,8 +48,9 @@ proc LipNetwork		{infile outfile {IsoVal "none"} {difsel false}} {
 #		IsoLow	:	Isovalue that is threshold for judging occupancy
 #		NumFrames	Number of frames in the simulation
 #		DenNum	:	Number of lipid densities (centers)	
+#		MinCarbon	Minimumm number of carbons required for classification
 
-	global	LipDict LipMat LipArr IsoLow NumFrames DenNum 
+	global	LipDict LipMat LipArr IsoLow NumFrames DenNum MinCarbon OUTFILE
 
 	::struct::matrix	LipMat
 
@@ -60,6 +61,10 @@ proc LipNetwork		{infile outfile {IsoVal "none"} {difsel false}} {
 	set	NumFrames	[molinfo top get numframes]
 
 	set	IsoLow		$IsoVal
+
+	set	MinCarbon	$CarbonThreshold
+
+	set	OUTFILE		$outfile
 
 	set	ReturnList	[get_centers $infile]
 
@@ -131,6 +136,9 @@ proc get_lipid_list	{} {
 
 		animate goto $n
 
+#		The range that lipids are selected should be toggled (i.e. between 5 - 20) to make sure that you are not processing
+#		an unnecessary number of calculations for a given job.
+
 		set lipid	[atomselect top "resname DMPC and same residue as within 10 of (protein and resid 84 215)"]
 
 		$lipid			set beta 1
@@ -181,8 +189,8 @@ proc lip_analysis	{difsel} {
 
 			if		{$IsoLow != "none"} {
 
-				set	LipOccupy_1	[eval_density	$tail_1]
-				set	LipOccupy_2	[eval_density	$tail_2]
+				set	LipOccupy_1	[eval_density	$tail_1 $ResID $SegID $n]
+				set	LipOccupy_2	[eval_density	$tail_2 $ResID $SegID $n]
 
 				if		{$LipOccupy_1 && $LipOccupy_2}	then	{pop_matrix $LipCenter_1 $LipCenter_2
 
@@ -233,26 +241,42 @@ proc which_center	{lipid_tail} {
 	return	$LipDen	
 }
 
-proc eval_density	{lipid_tail} {
+proc eval_density	{lipid_tail ResID SegID nframe} {
+#
+#	Currently this proc() takes the list of carbons in the atom selection, creates a list of the carbons indices and finds the
+#	the density value that it occupies. It just calculates what the average density of the carbon tail is...instead I need it 
+#	to calculate how many of the carbons are inside the density. This will return true if the number of carbons is greater than 
+#	the required minimum.
+#	
+#	In addition to IsoLow, this classifier will need to know the minimum number of carbons (MinNum) to qualify for designation.
+#
+#	For every "true" hit, the lipid ID (RESID, not the carbon index val) and the frame of the .dcd file will be saved and stored 
+#	in an output file.
 
-	global IsoLow
+	global IsoLow MinCarbon OUTFILE
 
 	set lipid_index		[$lipid_tail get index]
 
 	set tot_den		0
 
+	set NumCarbon		0
+
+	set out			"$OUTFILE[set ender "_LipList"]"
+
 	foreach ind $lipid_index {
 
 		set lip_atom	[atomselect top "index $ind"]
 
-		set tot_den	[expr $tot_den + [$lip_atom get interpvol0]]
+		set atom_den	[$lip_atom get interpvol0]
+
+		if {$atom_den > $IsoLow} {incr NumCarbon}
 	}
 	
-	set avg_den		[expr $tot_den / [llength $lipid_index]]
-	
-	if {$avg_den >= $IsoLow} {	
+	if {$NumCarbon >= $MinCarbon} {	
 
 		return true 
+
+		puts $out 	"$ResID\t$SegID\t$nframe"
 
 	} else	{
 
