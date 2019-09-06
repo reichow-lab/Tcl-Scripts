@@ -50,7 +50,7 @@ proc LipNetwork		{infile outfile CarbonThreshold {IsoVal "none"} {difsel false}}
 #		DenNum	:	Number of lipid densities (centers)	
 #		MinCarbon	Minimumm number of carbons required for classification
 
-	global	LipDict LipMat LipArr IsoLow NumFrames DenNum MinCarbon OUTFILE
+	global	LipDict LipMat LipArr LipList IsoLow NumFrames DenNum MinCarbon OUTFILE
 
 	::struct::matrix	LipMat
 
@@ -58,6 +58,8 @@ proc LipNetwork		{infile outfile CarbonThreshold {IsoVal "none"} {difsel false}}
 
 	LipMat	link		LipArr
 	
+	set	LipList		""
+
 	set	NumFrames	[molinfo top get numframes]
 
 	set	IsoLow		$IsoVal
@@ -83,6 +85,24 @@ proc LipNetwork		{infile outfile CarbonThreshold {IsoVal "none"} {difsel false}}
 	lip_analysis $difsel
 
 	pop_matrix 0 0 true $outfile
+
+	if {$IsoLow != "none"} {
+
+		set LipLogOutname	"$OUTFILE[set ender "_LipList.log"]"
+
+		set LipLogOUt		[open	$LipLogOutname w]
+
+		puts	$LipLogOut	"ResID\tSegID\tFrame"
+
+		foreach lipid $LipList {
+
+			puts	$LipLogOut	"[lindex $lipid 0]\t[lindex $lipid 1]\t[lindex $lipid 2]"
+
+		}
+
+		close	$LipLogOut
+
+	}
 
 	puts	"final matrix written to $outfile"
 
@@ -253,17 +273,13 @@ proc eval_density	{lipid_tail ResID SegID nframe} {
 #	For every "true" hit, the lipid ID (RESID, not the carbon index val) and the frame of the .dcd file will be saved and stored 
 #	in an output file.
 
-	global IsoLow MinCarbon OUTFILE
+	global IsoLow MinCarbon OUTFILE LipList
 
 	set lipid_index		[$lipid_tail get index]
 
 	set tot_den		0
 
 	set NumCarbon		0
-
-	set outname		"$OUTFILE[set ender "_LipList"]"
-
-	set out			[open $outname a+]
 
 	foreach ind $lipid_index {
 
@@ -278,14 +294,16 @@ proc eval_density	{lipid_tail ResID SegID nframe} {
 
 		return true 
 
-		puts $out 	"$ResID\t$SegID\t$nframe"
+		set	attr	[list $ResID $SegID $nframe]
+
+		lappend	LipList $attr
+
+		unset	attr
 
 	} else	{
 
 		return false
 	}
-
-	close	$out
 
 }
 
