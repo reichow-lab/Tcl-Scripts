@@ -261,7 +261,9 @@ proc eval_density	{lipid_tail ResID SegID nframe} {
 
 	set NumCarbon		0
 
-	set out			"$OUTFILE[set ender "_LipList"]"
+	set outname		"$OUTFILE[set ender "_LipList"]"
+
+	set out			[open $outname a+]
 
 	foreach ind $lipid_index {
 
@@ -282,6 +284,8 @@ proc eval_density	{lipid_tail ResID SegID nframe} {
 
 		return false
 	}
+
+	close	$out
 
 }
 
