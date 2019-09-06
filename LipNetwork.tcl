@@ -90,7 +90,7 @@ proc LipNetwork		{infile outfile CarbonThreshold {IsoVal "none"} {difsel false}}
 
 		set LipLogOutname	"$OUTFILE[set ender "_LipList.log"]"
 
-		set LipLogOUt		[open	$LipLogOutname w]
+		set LipLogOut		[open	$LipLogOutname w]
 
 		puts	$LipLogOut	"ResID\tSegID\tFrame"
 
@@ -211,7 +211,7 @@ proc lip_analysis	{difsel} {
 
 				set	LipOccupy_1	[eval_density	$tail_1 $ResID $SegID $n]
 				set	LipOccupy_2	[eval_density	$tail_2 $ResID $SegID $n]
-
+				
 				if		{$LipOccupy_1 && $LipOccupy_2}	then	{pop_matrix $LipCenter_1 $LipCenter_2
 
 				} else	{variable donothing 0}
@@ -292,13 +292,15 @@ proc eval_density	{lipid_tail ResID SegID nframe} {
 	
 	if {$NumCarbon >= $MinCarbon} {	
 
-		return true 
-
 		set	attr	[list $ResID $SegID $nframe]
+
+		puts	$attr
 
 		lappend	LipList $attr
 
 		unset	attr
+
+		return true
 
 	} else	{
 
