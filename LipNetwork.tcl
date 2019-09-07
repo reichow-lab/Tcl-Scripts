@@ -92,11 +92,11 @@ proc LipNetwork		{infile outfile CarbonThreshold {IsoVal "none"} {difsel false}}
 
 		set LipLogOut		[open	$LipLogOutname w]
 
-		puts	$LipLogOut	"ResID\tSegID\tFrame"
+		puts	$LipLogOut	"ResID\tSegID\tFrame\tCarbonTail-1\tCarbonTail-2"
 
 		foreach lipid $LipList {
 
-			puts	$LipLogOut	"[lindex $lipid 0]\t[lindex $lipid 1]\t[lindex $lipid 2]"
+			puts	$LipLogOut	"[lindex $lipid 0]\t[lindex $lipid 1]\t[lindex $lipid 2]\t[lindex $lipid 3]\t[lindex $lipid 4]"
 
 		}
 
@@ -126,7 +126,11 @@ proc get_centers	{infile} {
 	set	centers		[split $centers_read "\n"]
 
 	set	DenNum		[expr [llength $centers]]
+
 	puts	"DenNum: $DenNum"
+	puts	"Come back in a bit..."
+
+
 	set	i		0
 
 	foreach line $centers {
@@ -175,7 +179,7 @@ proc get_lipid_list	{} {
 
 proc lip_analysis	{difsel} {
 
-	global Phosp_Ind NumFrames IsoLow
+	global Phosp_Ind NumFrames IsoLow LipList
 
 	if {!$difsel} { 
 	
@@ -212,7 +216,15 @@ proc lip_analysis	{difsel} {
 				set	LipOccupy_1	[eval_density	$tail_1 $ResID $SegID $n]
 				set	LipOccupy_2	[eval_density	$tail_2 $ResID $SegID $n]
 				
-				if		{$LipOccupy_1 && $LipOccupy_2}	then	{pop_matrix $LipCenter_1 $LipCenter_2
+				if	{[lindex $LipOccupy_1 0] && [lindex $LipOccupy_2 0]} {
+					
+					pop_matrix $LipCenter_1 $LipCenter_2
+
+					set     attr    [list $ResID $SegID $n [lindex $LipOccupy_1 1] [lindex $LipOccupy_2 1]]
+
+					lappend	LipList	$attr
+
+					unset	attr
 
 				} else	{variable donothing 0}
 
@@ -287,20 +299,18 @@ proc eval_density	{lipid_tail ResID SegID nframe} {
 
 		set atom_den	[$lip_atom get interpvol0]
 
-		if {$atom_den > $IsoLow} {incr NumCarbon}
+		if {$atom_den >= $IsoLow} {incr NumCarbon}
 	}
 	
 	if {$NumCarbon >= $MinCarbon} {	
 
-		set	attr	[list $ResID $SegID $nframe]
-
-		puts	$attr
+		set	attr	[list $ResID $SegID $nframe $NumCarbon]
 
 		lappend	LipList $attr
 
 		unset	attr
 
-		return true
+		return [list true $NumCarbon]
 
 	} else	{
 
