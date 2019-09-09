@@ -92,7 +92,7 @@ proc LipNetwork		{infile outfile CarbonThreshold {IsoVal "none"} {difsel false}}
 
 		set LipLogOut		[open	$LipLogOutname w]
 
-		puts	$LipLogOut	"ResID\tSegID\tFrame\tCarbonTail-1\tCarbonTail-2"
+		puts	$LipLogOut	"ResID\tSegID\tFrame\tCarbonTail-1\t\tCarbonTail-2"
 
 		foreach lipid $LipList {
 
