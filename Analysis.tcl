@@ -1,5 +1,9 @@
 ##########################################################################
+<<<<<<< HEAD
 ##  A comprehensive script with different processes of MD analysis	##
+=======
+##	A comprehensive script with different processes of MD analysis	##
+>>>>>>> new_classify
 ##									##
 ##	Portland State University					##
 ##	P.I.	: Steve Reichow						##
@@ -17,7 +21,12 @@ proc title {{opt 0}} {
 	puts "<dihedral_time>   Measure the dihedral angles of a selection"
 	puts "<dihedral_z>      Measure the dihedral angle versus z-coord of a selection"
 	puts "<cent_o_mass {0}> Measure the center of mass of the selection."
+<<<<<<< HEAD
 	puts "<ave_pos>         Move the atoms of the selection to their average position"
+=======
+	if {$opt} {puts "<ave_pos>         Move the atoms of the selection to their average position"}
+	if {$opt} {puts "<seed_z>          Find the frame closest to your z-value for a seed"}
+>>>>>>> new_classify
 	puts "<title {0}>    To show these commands again."
 }
 title
@@ -73,19 +82,19 @@ proc set_dihedLabel {} {
 
 
 	set	molid		[get_molid]
-	puts			"Type your four-atom selection, one atom at a time"
+	puts			"Type your four-atom name selection, one atom at a time"
 	puts	-nonewline	"Atom 1: "
 	flush	stdout
-	set	atom_1		[atomselect $molid [gets stdin]]
+	set	atom_1		[atomselect $molid "name [gets stdin]"]
 	puts	-nonewline	"Atom 2: "
 	flush	stdout
-	set	atom_2		[atomselect $molid [gets stdin]]
+	set	atom_2		[atomselect $molid "name [gets stdin]"]
 	puts	-nonewline	"Atom 3: "
 	flush	stdout
-	set	atom_3		[atomselect $molid [gets stdin]]
+	set	atom_3		[atomselect $molid "name [gets stdin]"]
 	puts	-nonewline	"Atom 4: "
 	flush	stdout
-	set	atom_4		[atomselect $molid [gets stdin]]
+	set	atom_4		[atomselect $molid "name [gets stdin]"]
 
 	set	id_1		"[$atom_1 molid]\/[$atom_1 get index]"
 	set	id_2		"[$atom_2 molid]\/[$atom_2 get index]"
@@ -258,7 +267,7 @@ proc dihedral_time {} {
 }
 
 
-## Measures and writes to file the dihedral angles of select atoms per z-coord
+## Measures and writes to file the dihedral angles of select atoms per z-coord relative to the protein
 proc dihedral_z {} {
 
 	label	delete	Atoms
@@ -267,6 +276,7 @@ proc dihedral_z {} {
 	set	molid		[set_dihedLabel]
 	set	selection	[get_selection]
 	set	sel		[atomselect $molid $selection]
+	set	prot		[atomselect $molid "protein and resid 208"]
 
 	puts "Once your dihedral angle has been labelled, start the script by typing <run>"
 	puts "Continue using the command selecting new angles as desired."
@@ -279,7 +289,7 @@ proc dihedral_z {} {
 	for {set f 0} {$f < $frames} {incr f} {
 
 		animate goto $f
-		lappend	zcoords	[lindex [measure center $sel weight mass] 2]
+		lappend	zcoords	[expr [lindex [measure center $sel weight mass] 2] - [lindex [measure center $prot weight mass] 2]]
 	}
 
 	foreach angle $dihed z $zcoords {
@@ -352,4 +362,46 @@ proc ave_pos {} {
 	# Moving the atoms of the selection to their average position
 	set	pos		[measure avpos $sel]
 	$sel	set {x y z}	$pos
+}
+
+proc seed_z {} {
+
+	# Setting initial variables
+	set	molid		[get_molid]
+	set	selection	[get_selection]
+	set	sel		[atomselect $molid $selection]
+	if	{[$sel num] <= 0} {error "seed_z: needs a selection with atoms"}
+	set	prot		[atomselect $molid protein]
+	set	frames		[molinfo $molid get numframes]
+	set	z_dict		[list]
+
+	# Filling the frame-z dictionary with values
+	for {set f 0} {$f < $frames} {incr f} {
+
+		set	selctr	[measure center $sel]
+		set	protctr	[measure center $prot]
+		set	z	[expr [lindex $selctr 2] - [lindex $protctr 2]]
+		lappend	z_dict	"$f $z"
+	}
+
+	# Find the frame you are looking for
+	puts	"To get the frame closest to the z-value you are looking for"
+	puts	"type: 'find_z <z-value>'"
+
+	proc find_z {zval} {
+
+		set	diff_list	[list]
+
+		foreach pair $z_dict {
+
+			set	fram		[lindex $pair 0]
+			set	z_diff		[expr [lindex $pair 1] - $zval]
+			set	abs_diff	[expr {abs($z_diff)}]
+			lappend	diff_list	"$fram $abs_diff"
+		}
+
+		set	ideal_frame	[lindex [lsort -index 1 $diff_list] 0 0]
+
+		puts	"Your ideal frame is \# $ideal_frame"]
+	}
 }
