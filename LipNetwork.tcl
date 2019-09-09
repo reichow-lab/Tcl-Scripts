@@ -304,11 +304,11 @@ proc eval_density	{lipid_tail ResID SegID nframe} {
 	
 	if {$NumCarbon >= $MinCarbon} {	
 
-		set	attr	[list $ResID $SegID $nframe $NumCarbon]
-
-		lappend	LipList $attr
-
-		unset	attr
+#		set	attr	[list $ResID $SegID $nframe $NumCarbon]
+#
+#		lappend	LipList $attr
+#
+#		unset	attr
 
 		return [list true $NumCarbon]
 
