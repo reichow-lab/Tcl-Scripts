@@ -92,11 +92,11 @@ proc LipNetwork		{infile outfile CarbonThreshold {IsoVal "none"} {difsel false}}
 
 		set LipLogOut		[open	$LipLogOutname w]
 
-		puts	$LipLogOut	"ResID\tSegID\tFrame\tCarbonTail-1\tCarbonTail-2"
+		puts	$LipLogOut	"ResID\tSegID\tLipCenter-1\tLipCenter-2\tFrame\tCarbonTail-1\tCarbonTail-2"
 
 		foreach lipid $LipList {
 
-			puts	$LipLogOut	"[lindex $lipid 0]\t[lindex $lipid 1]\t[lindex $lipid 2]\t[lindex $lipid 3]\t\t[lindex $lipid 4]"
+			puts	$LipLogOut	"[lindex $lipid 0]\t[lindex $lipid 1]\t[lindex $lipid 2]\t\t[lindex $lipid 3]\t\t[lindex $lipid 4]\t[lindex $lipid 5]\t\t[lindex $lipid 6]"
 
 		}
 
@@ -220,7 +220,7 @@ proc lip_analysis	{difsel} {
 					
 					pop_matrix $LipCenter_1 $LipCenter_2
 
-					set     attr    [list $ResID $SegID $n [lindex $LipOccupy_1 1] [lindex $LipOccupy_2 1]]
+					set     attr    [list $ResID $SegID $LipCenter_1 $LipCenter_2 $n [lindex $LipOccupy_1 1] [lindex $LipOccupy_2 1]]
 
 					lappend	LipList	$attr
 
