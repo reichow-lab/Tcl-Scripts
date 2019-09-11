@@ -130,7 +130,6 @@ proc get_centers	{infile} {
 	puts	"DenNum: $DenNum"
 	puts	"Come back in a bit..."
 
-
 	set	i		0
 
 	foreach line $centers {
@@ -263,7 +262,7 @@ proc which_center	{lipid_tail} {
 
 			set hold	$dist
 
-			set LipDen	[expr [dict get $LipDict $DEN id] - 1]
+			set LipDen	[dict get $LipDict $DEN id]
 
 		} else {	set hold	$hold
 
@@ -321,9 +320,12 @@ proc pop_matrix		{den_id_1 den_id_2 {writematrix false} {outfile false}} {
 
 	if {$writematrix == false} {
 
-		LipMat set cell $den_id_1 $den_id_2 [expr $LipArr($den_id_1,$den_id_2) + 1]
+		set	den_mat_1	[expr $den_id_1 - 1]
+		set	den_mat_2	[expr $den_id_2 - 1]
 
-		LipMat set cell $den_id_2 $den_id_1 [expr $LipArr($den_id_2,$den_id_1) + 1]
+		LipMat set cell $den_mat_1 $den_mat_2 [expr $LipArr($den_mat_1,$den_mat_2) + 1]
+
+		LipMat set cell $den_mat_2 $den_mat_1 [expr $LipArr($den_mat_2,$den_mat_1) + 1]
 
 	} elseif {$writematrix == true} {
 
