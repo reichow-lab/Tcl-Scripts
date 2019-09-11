@@ -213,8 +213,8 @@ proc lip_analysis	{difsel} {
 
 			if		{$IsoLow != "none"} {
 
-				set	LipOccupy_1	[eval_density	$tail_1 $ResID $SegID $n]
-				set	LipOccupy_2	[eval_density	$tail_2 $ResID $SegID $n]
+				set	LipOccupy_1	[eval_density	$tail_1 $LipCenter_1]
+				set	LipOccupy_2	[eval_density	$tail_2 $LipCenter_2]
 				
 				if	{[lindex $LipOccupy_1 0] && [lindex $LipOccupy_2 0]} {
 					
@@ -273,7 +273,7 @@ proc which_center	{lipid_tail} {
 	return	$LipDen	
 }
 
-proc eval_density	{lipid_tail ResID SegID nframe} {
+proc eval_density	{lipid_tail lip_center} {
 #
 #	Currently this proc() takes the list of carbons in the atom selection, creates a list of the carbons indices and finds the
 #	the density value that it occupies. It just calculates what the average density of the carbon tail is...instead I need it 
@@ -285,7 +285,7 @@ proc eval_density	{lipid_tail ResID SegID nframe} {
 #	For every "true" hit, the lipid ID (RESID, not the carbon index val) and the frame of the .dcd file will be saved and stored 
 #	in an output file.
 
-	global IsoLow MinCarbon OUTFILE LipList
+	global IsoLow MinCarbon
 
 	set lipid_index		[$lipid_tail get index]
 
@@ -299,16 +299,12 @@ proc eval_density	{lipid_tail ResID SegID nframe} {
 
 		set atom_den	[$lip_atom get interpvol0]
 
-		if {$atom_den >= $IsoLow} {incr NumCarbon}
+		set atom_center	[which_center $lip_atom]
+
+		if {($atom_den >= $IsoLow) && ($atom_center == $lip_center)} {incr NumCarbon}
 	}
 	
 	if {$NumCarbon >= $MinCarbon} {	
-
-#		set	attr	[list $ResID $SegID $nframe $NumCarbon]
-#
-#		lappend	LipList $attr
-#
-#		unset	attr
 
 		return [list true $NumCarbon]
 
