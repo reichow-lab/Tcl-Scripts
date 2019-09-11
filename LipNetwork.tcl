@@ -295,9 +295,9 @@ proc eval_density	{lipid_tail lip_center} {
 
 	foreach ind $lipid_index {
 
-		set Z_min	[dict get $LipDict $]
+		set Z_min	[dict get $LipDict $lip_center Zmin]
 
-		set Z_max	[]
+		set Z_max	[dict get $LipDict $lip_center Zmax]
 
 		set lip_atom	[atomselect top "index $ind"]
 
@@ -305,7 +305,9 @@ proc eval_density	{lipid_tail lip_center} {
 
 		set atom_center	[which_center $lip_atom]
 
-		if {($atom_den >= $IsoLow) && ($atom_center == $lip_center)} {incr NumCarbon}
+		set atom_Z	[lindex [measure center $lip_atom] 2]
+
+		if {($atom_den >= $IsoLow) && ($atom_center == $lip_center) && (($atom_z >= $Z_min) &&  ($atom_z <= $Z_max))} {incr NumCarbon}
 	}
 	
 	if {$NumCarbon >= $MinCarbon} {	
