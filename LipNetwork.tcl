@@ -307,7 +307,7 @@ proc eval_density	{lipid_tail lip_center} {
 
 		set atom_Z	[lindex [measure center $lip_atom] 2]
 
-		if {($atom_den >= $IsoLow) && ($atom_center == $lip_center) && (($atom_z >= $Z_min) &&  ($atom_z <= $Z_max))} {incr NumCarbon}
+		if {($atom_den >= $IsoLow) && ($atom_center == $lip_center) && (($atom_Z >= $Z_min) &&  ($atom_z <= $Z_max))} {incr NumCarbon}
 	}
 	
 	if {$NumCarbon >= $MinCarbon} {	
