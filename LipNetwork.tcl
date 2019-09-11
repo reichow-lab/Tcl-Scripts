@@ -128,15 +128,16 @@ proc get_centers	{infile} {
 	set	DenNum		[expr [llength $centers]]
 
 	puts	"DenNum: $DenNum"
-	puts	"Come back in a bit..."
 
-	set	i		0
+	set	i		1
 
 	foreach line $centers {
 
 		dict set LipDict		$i	x	[lindex $line 0]
 		dict set LipDict		$i	y	[lindex $line 1]
 		dict set LipDict		$i	id	[lindex $line 2] 
+		dict set LipDict		$i	Zmin	[lindex $line 3]
+		dict set LipDict		$i	Zmax	[lindex $line 4]
 
 		incr i
 	}
@@ -284,7 +285,7 @@ proc eval_density	{lipid_tail lip_center} {
 #	For every "true" hit, the lipid ID (RESID, not the carbon index val) and the frame of the .dcd file will be saved and stored 
 #	in an output file.
 
-	global IsoLow MinCarbon
+	global IsoLow LipDict MinCarbon
 
 	set lipid_index		[$lipid_tail get index]
 
@@ -293,6 +294,10 @@ proc eval_density	{lipid_tail lip_center} {
 	set NumCarbon		0
 
 	foreach ind $lipid_index {
+
+		set Z_min	[dict get $LipDict $]
+
+		set Z_max	[]
 
 		set lip_atom	[atomselect top "index $ind"]
 
