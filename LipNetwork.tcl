@@ -191,8 +191,8 @@ proc lip_analysis	{difsel} {
 		
 	} elseif {$difsel} {
 
-		set tail_1_text "lipid and (name C21 C22)"
-		set tail_2_text "lipid and (name C31 C32)"
+		set tail_1_text "lipid and (name C21 C23)"
+		set tail_2_text "lipid and (name C31 C33)"
 	}
 
 	set ind_percent [expr {round([llength $Phosp_Ind] / ([expr [llength $Phosp_Ind] / 20]))}]
