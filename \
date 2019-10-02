@@ -1,35 +1,20 @@
 proc	Title	{{v ""}} {
 
 	if {$v == "-v"} {
-		puts		""
 		puts		"Proc Lip-align:	Takes the users selection of any lipids, and aligns them together to a reference lipid.\n"
 		puts		"			Press '1' and select the lipids that you want aligned in the VMD GUI...\n"
 		puts		"			To run '$ Lip-align <MOLID>'\n"
-		puts		"Proc align:		aligns trajectory relative to the protein...i.e. aligns the protein to itself or a separate protein.\n"
+		puts		"Proc align: 		aligns trajectory relative to the protein...i.e. aligns the protein to itself or a separate protein.\n"
 		puts		"			Select the molid for the reference and the selection. Uses the first frame from the ref. molid as the reference for the whole system.\n"
 		puts		"			To run '$ align'\n"
-		puts		"Proc Prot-align:	Takes all of the annular lipids around the protein, and aligns them to a single protein chain.\n"
+		puts		"Proc Prot-align: 	Takes all of the annular lipids around the protein, and aligns them to a single protein chain.\n"
 		puts		"			To run '$ Prot-align <MOLID> <LOGFILE-NAME> <CHAIN>'\n"
-		puts            "Proc LipNetwork:	Using the centers file, containing the (x,y) coordinates of the annular\n"
-                puts            "			lipid densities (from MD or CryoEM) and calculates the interconnectivity\n" 
-                puts            "			of the lipid tails within the densities. This script creates a 'transition\n"
-                puts            "			matrix' that shows when any two lipid densities are occupied by a single\n"
-                puts            "			lipid. The default minimum IsoLow is 0, meaning the density does not matter\n" 
-                puts            "			and thus assumed that a tail is always assigned to a lipid density 'region'.\n"
-                puts            "			In order for this program to work, the volume file (.mrc or .dx) must be\n"
-                puts            "			loaded into the top molecule (the one containing your .dcd. Furthermore, \n"
-                puts            "			you need to run 'align' and 'Prot-align' to ensure the protein/lipids are \n"
-                puts            "			at there best-fit to each other.\n"
-		puts            "			To run '$ LipNetwork <CENTER FILE> <OUTFILE> <CARBON-THRESHOLD> <ISO-THRESHOLD (default: none)> <DIFSEL (default: false)>'\n"
 
 	} else {
 
-		puts		""
-		puts            "			To run '$ Lip-align <MOLID>'\n"
-		puts            "			To run '$ align'\n"
-		puts            " 			To run '$ Prot-align <MOLID> <LOGFILE-NAME> <CHAIN>'\n"
-		puts            " 			To run '$ LipNetwork <CENTER FILE> <OUTFILE> <CARBON-THRESHOLD> <ISO-THRESHOLD (def: none)> <DIFSEL (def: false)>'\n"
-		puts		"			To run '$ lipid_animator <LipList> <molid>'\n"
+		puts            "                       To run '$ Lip-align <MOLID>'\n"
+		puts            "                       To run '$ align'\n"
+		puts            "                       To run '$ Prot-align <MOLID> <LOGFILE-NAME> <CHAIN>'\n"
 	}
 }
 
@@ -204,3 +189,4 @@ proc	Prot-align	{MOLID logfile {RefChain A}} {
 
 	Title
 }
+

@@ -31,6 +31,7 @@
 ################################
 source	~/Scripts/TCL/Tcl-Scripts/matrix.tcl
 source	~/Scripts/TCL/Tcl-Scripts/Lip-Analysis-Tools.tcl
+source	~/Scripts/TCL/Tcl-Scripts/Animate_Lipid.tcl
 ################################
 
 
@@ -57,8 +58,10 @@ proc LipNetwork		{infile outfile CarbonThreshold {IsoVal "none"} {difsel false}}
 	array	set		LipArr	{}
 
 	LipMat	link		LipArr
-	
+
 	set	LipList		""
+
+	set	molid		[molinfo top]
 
 	set	NumFrames	[molinfo top get numframes]
 
@@ -92,11 +95,11 @@ proc LipNetwork		{infile outfile CarbonThreshold {IsoVal "none"} {difsel false}}
 
 		set LipLogOut		[open	$LipLogOutname w]
 
-		puts	$LipLogOut	"ResID\tSegID\tFrame\tCarbonTail-1\tCarbonTail-2"
+		puts	$LipLogOut	"ResID\tSegID\tLipCenter-1\tLipCenter-2\tFrame\tCarbonTail-1\tCarbonTail-2"
 
 		foreach lipid $LipList {
 
-			puts	$LipLogOut	"[lindex $lipid 0]\t[lindex $lipid 1]\t[lindex $lipid 2]\t[lindex $lipid 3]\t\t[lindex $lipid 4]"
+			puts	$LipLogOut	"[lindex $lipid 0]\t[lindex $lipid 1]\t[lindex $lipid 2]\t\t[lindex $lipid 3]\t\t[lindex $lipid 4]\t[lindex $lipid 5]\t\t[lindex $lipid 6]"
 
 		}
 
@@ -128,16 +131,16 @@ proc get_centers	{infile} {
 	set	DenNum		[expr [llength $centers]]
 
 	puts	"DenNum: $DenNum"
-	puts	"Come back in a bit..."
 
-
-	set	i		0
+	set	i		1
 
 	foreach line $centers {
 
 		dict set LipDict		$i	x	[lindex $line 0]
 		dict set LipDict		$i	y	[lindex $line 1]
 		dict set LipDict		$i	id	[lindex $line 2] 
+		dict set LipDict		$i	Zmin	[lindex $line 3]
+		dict set LipDict		$i	Zmax	[lindex $line 4]
 
 		incr i
 	}
@@ -213,14 +216,14 @@ proc lip_analysis	{difsel} {
 
 			if		{$IsoLow != "none"} {
 
-				set	LipOccupy_1	[eval_density	$tail_1 $ResID $SegID $n]
-				set	LipOccupy_2	[eval_density	$tail_2 $ResID $SegID $n]
+				set	LipOccupy_1	[eval_density	$tail_1 $LipCenter_1]
+				set	LipOccupy_2	[eval_density	$tail_2 $LipCenter_2]
 				
 				if	{[lindex $LipOccupy_1 0] && [lindex $LipOccupy_2 0]} {
 					
 					pop_matrix $LipCenter_1 $LipCenter_2
 
-					set     attr    [list $ResID $SegID $n [lindex $LipOccupy_1 1] [lindex $LipOccupy_2 1]]
+					set     attr    [list $ResID $SegID $LipCenter_1 $LipCenter_2 $n [lindex $LipOccupy_1 1] [lindex $LipOccupy_2 1]]
 
 					lappend	LipList	$attr
 
@@ -263,7 +266,7 @@ proc which_center	{lipid_tail} {
 
 			set hold	$dist
 
-			set LipDen	[expr [dict get $LipDict $DEN id] - 1]
+			set LipDen	[dict get $LipDict $DEN id]
 
 		} else {	set hold	$hold
 
@@ -273,7 +276,7 @@ proc which_center	{lipid_tail} {
 	return	$LipDen	
 }
 
-proc eval_density	{lipid_tail ResID SegID nframe} {
+proc eval_density	{lipid_tail lip_center} {
 #
 #	Currently this proc() takes the list of carbons in the atom selection, creates a list of the carbons indices and finds the
 #	the density value that it occupies. It just calculates what the average density of the carbon tail is...instead I need it 
@@ -285,7 +288,7 @@ proc eval_density	{lipid_tail ResID SegID nframe} {
 #	For every "true" hit, the lipid ID (RESID, not the carbon index val) and the frame of the .dcd file will be saved and stored 
 #	in an output file.
 
-	global IsoLow MinCarbon OUTFILE LipList
+	global IsoLow LipDict MinCarbon
 
 	set lipid_index		[$lipid_tail get index]
 
@@ -295,20 +298,22 @@ proc eval_density	{lipid_tail ResID SegID nframe} {
 
 	foreach ind $lipid_index {
 
+		set Z_min	[dict get $LipDict $lip_center Zmin]
+
+		set Z_max	[dict get $LipDict $lip_center Zmax]
+
 		set lip_atom	[atomselect top "index $ind"]
 
 		set atom_den	[$lip_atom get interpvol0]
 
-		if {$atom_den >= $IsoLow} {incr NumCarbon}
+		set atom_center	[which_center $lip_atom]
+
+		set atom_Z	[lindex [measure center $lip_atom] 2]
+
+		if {($atom_den >= $IsoLow) && ($atom_center == $lip_center) && (($atom_Z >= $Z_min) &&  ($atom_Z <= $Z_max))} {incr NumCarbon}
 	}
 	
 	if {$NumCarbon >= $MinCarbon} {	
-
-#		set	attr	[list $ResID $SegID $nframe $NumCarbon]
-#
-#		lappend	LipList $attr
-#
-#		unset	attr
 
 		return [list true $NumCarbon]
 
@@ -325,9 +330,12 @@ proc pop_matrix		{den_id_1 den_id_2 {writematrix false} {outfile false}} {
 
 	if {$writematrix == false} {
 
-		LipMat set cell $den_id_1 $den_id_2 [expr $LipArr($den_id_1,$den_id_2) + 1]
+		set	den_mat_1	[expr $den_id_1 - 1]
+		set	den_mat_2	[expr $den_id_2 - 1]
 
-		LipMat set cell $den_id_2 $den_id_1 [expr $LipArr($den_id_2,$den_id_1) + 1]
+		LipMat set cell $den_mat_1 $den_mat_2 [expr $LipArr($den_mat_1,$den_mat_2) + 1]
+
+		LipMat set cell $den_mat_2 $den_mat_1 [expr $LipArr($den_mat_2,$den_mat_1) + 1]
 
 	} elseif {$writematrix == true} {
 
