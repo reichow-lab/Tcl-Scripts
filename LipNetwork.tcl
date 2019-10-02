@@ -31,6 +31,7 @@
 ################################
 source	~/Scripts/TCL/Tcl-Scripts/matrix.tcl
 source	~/Scripts/TCL/Tcl-Scripts/Lip-Analysis-Tools.tcl
+source	~/Scripts/TCL/Tcl-Scripts/Animate_Lipid.tcl
 ################################
 
 
@@ -57,8 +58,10 @@ proc LipNetwork		{infile outfile CarbonThreshold {IsoVal "none"} {difsel false}}
 	array	set		LipArr	{}
 
 	LipMat	link		LipArr
-	
+
 	set	LipList		""
+
+	set	molid		[molinfo top]
 
 	set	NumFrames	[molinfo top get numframes]
 

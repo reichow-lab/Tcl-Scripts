@@ -29,6 +29,7 @@ proc	Title	{{v ""}} {
 		puts            "			To run '$ align'\n"
 		puts            " 			To run '$ Prot-align <MOLID> <LOGFILE-NAME> <CHAIN>'\n"
 		puts            " 			To run '$ LipNetwork <CENTER FILE> <OUTFILE> <CARBON-THRESHOLD> <ISO-THRESHOLD (def: none)> <DIFSEL (def: false)>'\n"
+		puts		"			To run '$ lipid_animator <LipList> <molid>'\n"
 	}
 }
 
