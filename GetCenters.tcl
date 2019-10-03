@@ -1,7 +1,7 @@
 puts			"Press '1' and select the waters that you used for selecting lipid centers..."
 puts			"Once all of your waters have been selected, start the script by typing, 'run <output name>'"
 
-proc	run		{ofile} {
+proc	run		{ofile LipNum IsoList} {
 
 	set	AtomList	[label list Atoms]
 
@@ -11,11 +11,17 @@ proc	run		{ofile} {
 	
 	set	N		1
 
-#	The format of the output will be	[xval	yval	lipn	zmin	zmax]
+#	The format of the output will be	[xval	yval	lipn	zmin	zmax	IsoLow]
+	
+	foreach iso	$IsoList {
+
+		dict	set	IsoVals	$lipn	
+	}
+
 
 	foreach	line	$AtomList {
 		
-		if {$N <= 72} {
+		if {$N <= [expr $LipNum * 6]} {
 	
 			set	zmin	115
 			set	zmax	135 
