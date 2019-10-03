@@ -21,19 +21,15 @@
 #		Output_name	- This is the name of the file that the final connectivity matrix will be written to...It is written in a simplistic space delimited
 #				text-file, which will have an accompanying python script to make it into a numpy array.
 #		IsoLow		- This is the minimum isovalue (density of volume map) that each lipid tail must occupy (on average) in order for the tail to be 
-#				considered occupying a lipid density. This is a tuneable parameter...a lower isovalue accepts more lipids.
-#
-#	Processes to come:
-#
-#		rep_lipids()	- Takes a snapshot of a lipid occupying two densities, demonstrating connectivity. Alternatively, it could also just spit out a list of the
-#				[resid - segid - frame] that the snapshot occurs, this way it doesn't spit out a shitton of .pdb's.
+#				considered occupying a lipid density. This is a tuneable parameter...a lower isovalue accepts more lipids. Two alternatives to entering a 
+#				value are: 'none', and 'sep'. 'none' takes away the density dependence and instead assignes every lipid to a center, whereas 'sep' tells
+#				LipNetwork to use center-specific Isolows which are in the CentersFile.
 #
 ################################
 source	~/Scripts/TCL/Tcl-Scripts/matrix.tcl
 source	~/Scripts/TCL/Tcl-Scripts/Lip-Analysis-Tools.tcl
 source	~/Scripts/TCL/Tcl-Scripts/Animate_Lipid.tcl
 ################################
-
 
 Title
 
@@ -141,6 +137,7 @@ proc get_centers	{infile} {
 		dict set LipDict		$i	id	[lindex $line 2] 
 		dict set LipDict		$i	Zmin	[lindex $line 3]
 		dict set LipDict		$i	Zmax	[lindex $line 4]
+		dict set LipDict		$i	Isolow	[lindex $line 5]
 
 		incr i
 	}
@@ -310,7 +307,9 @@ proc eval_density	{lipid_tail lip_center} {
 
 		set atom_Z	[lindex [measure center $lip_atom] 2]
 
-		if {($atom_den >= $IsoLow) && ($atom_center == $lip_center) && (($atom_Z >= $Z_min) &&  ($atom_Z <= $Z_max))} {incr NumCarbon}
+		if {$IsoLow == "sep"} {set IsoThresh [dict get $LipDict $lip_center Isolow]} {else set IsoThresh $IsoLow}
+
+		if {($atom_den >= $IsoThresh) && ($atom_center == $lip_center) && (($atom_Z >= $Z_min) &&  ($atom_Z <= $Z_max))} {incr NumCarbon}
 	}
 	
 	if {$NumCarbon >= $MinCarbon} {	
