@@ -188,8 +188,8 @@ proc lip_analysis	{difsel} {
 		
 	} elseif {$difsel} {
 
-		set tail_1_text "lipid and (name C21 to C23)"
-		set tail_2_text "lipid and (name C31 to C33)"
+		set tail_1_text "lipid and (name C22 to C24)"
+		set tail_2_text "lipid and (name C32 to C34)"
 	}
 
 	set ind_percent [expr {round([llength $Phosp_Ind] / ([expr [llength $Phosp_Ind] / 20]))}]
@@ -216,7 +216,7 @@ proc lip_analysis	{difsel} {
 				set	LipOccupy_1	[eval_density	$tail_1 $LipCenter_1]
 				set	LipOccupy_2	[eval_density	$tail_2 $LipCenter_2]
 				
-				if	{[lindex $LipOccupy_1 0] && [lindex $LipOccupy_2 0]} {
+				if	{[lindex $LipOccupy_1 0] && [lindex $LipOccupy_2 0] && ($LipCenter_1 != $LipCenter_2)} {
 					
 					pop_matrix $LipCenter_1 $LipCenter_2
 

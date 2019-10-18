@@ -1,7 +1,7 @@
 puts			"Press '1' and select the waters that you used for selecting lipid centers..."
 puts			"Once all of your waters have been selected, start the script by typing, 'run <output name>'"
 
-proc	run		{ofile LipNum IsoList} {
+proc	run		{ofile LipNum IsoList zmin1 zmax1 zmin2 zmax2} {
 
 	set	AtomList	[label list Atoms]
 
@@ -15,21 +15,24 @@ proc	run		{ofile LipNum IsoList} {
 	
 	foreach iso	$IsoList {
 
-		dict	set	IsoVals	$lipn	
+		dict	set	IsoVals	$lipn	Isolow	[lindex $iso]
+
+		incr	lipn
 	}
 
+	set	lipn		1
 
 	foreach	line	$AtomList {
 		
 		if {$N <= [expr $LipNum * 6]} {
 	
-			set	zmin	115
-			set	zmax	135 
+			set	zmin	$zmin1
+			set	zmax	$zmax1
 
 		} else {
 
-			set	zmin	177
-			set	zmax	197 }
+			set	zmin	$zmin2
+			set	zmax	$zmax2 }
 
 
 		set	Serial	[expr [lindex $line {0 1}] + 1]
@@ -40,13 +43,15 @@ proc	run		{ofile LipNum IsoList} {
 
 		set	yval	[$Sel get y]
 
-		puts	$out	"$xval\t$yval\t$lipn\t$zmin\t$zmax"
+		set	isolow	[dict get $IsoVals $lipn Isolow]
+
+		puts	$out	"$xval\t$yval\t$lipn\t$zmin\t$zmax\t$isolow"
 		
 		incr	N
 
 		incr	lipn
 
-		if {$lipn >= 13} {set lipn 1}
+		if {$lipn >= [expr $LipNum + 1]} {set lipn 1}
 
 	}
 
