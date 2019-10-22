@@ -1,3 +1,5 @@
+source	~/Scripts/TCL/Tcl-Scripts/calc_op.tcl
+
 proc	Title	{{v ""}} {
 
 	if {$v == "-v"} {
@@ -30,6 +32,7 @@ proc	Title	{{v ""}} {
 		puts            " 			To run '$ Prot-align <MOLID> <LOGFILE-NAME> <CHAIN>'\n"
 		puts            " 			To run '$ LipNetwork <CENTER FILE> <OUTFILE> <CARBON-THRESHOLD> <ISO-THRESHOLD (def: none)> <DIFSEL (def: false)>'\n"
 		puts		"			To run '$ lipid_animator <LipList> <molid>'\n"
+		puts		"			To run '$ PerLipidOP <outname>'\n"
 	}
 }
 
@@ -203,4 +206,94 @@ proc	Prot-align	{MOLID logfile {RefChain A}} {
 	puts "*"
 
 	Title
+}
+
+proc	PerLipidOP {outname} {
+
+	set	lipids	[atomselect top "lipids and name P"]
+
+	set	num_lip	[$lipids num]
+
+	set	ResList	[$lipids get resid]
+
+	set	SegList	[$lipids get segid]
+
+	set	k	1
+
+	set	prot	[atomselect top protein]
+	set	prot_x	[lindex	[measure center $prot]	0]
+	set	prot_y	[lindex [measure center $prot]	1]
+
+	foreach segid $SegList resid $ResList {
+	
+		set	lipid	[atomselect top "resid $resid and segid $segid"]
+		set	lip_x	[lindex [measure center $lipid]	0]
+		set	lip_y	[lindex [measure center $lipid] 1]
+
+		set	radius	[expr {sqrt(pow(($lip_x - $prot_x),2) + pow(($lip_y - $prot_y),2))}]
+
+		orderparam-c2	arr2	"resid $resid and segid $segid"
+		
+		set		listc2	""
+
+		foreach {carbon	parval}	[array get arr2] {
+			
+			lappend	listc2	"$carbon $parval"
+		}
+
+		orderparam-c3	arr3	"resid $resid and segid $segid"
+
+		set		listc3	""
+
+		foreach {carbon parval} [array get arr3] {
+
+			lappend	listc3	"$carbon $parval"
+		}
+
+		set	sum2	0
+		set	sum3	0
+
+		for {set i 0} {$i <= 12} {incr i} {
+
+			set	sum2	[expr [lindex $listc2 $i 1] + $sum2]
+			set	sum3	[expr [lindex $listc3 $i 1] + $sum3]
+
+			if {$i == 12} {
+			
+				set	avg2		[expr $sum2 / 13]
+				set	avg3		[expr $sum3 / 13]
+
+				dict	set	OParam	$k	RESID	$resid
+				dict	set	OParam	$k	SEGID	$segid
+				dict	set	OParam	$k	C2OP	$listc2
+				dict	set	OParam	$k	C2Avg	$avg2
+				dict	set	OParam	$k	C3OP	$listc3
+				dict	set	OParam	$k	C3Avg	$avg3
+				dict	set	OParam	$k	Radius	$radius
+				incr	k
+				puts "$k"
+			}
+		}
+	}
+
+	animate	goto	0
+
+	set	all	[atomselect top all]
+
+	$all	set	beta	0
+
+	for {set i 1} {$i < $k} {incr i} {
+
+		set	AcylC2	[atomselect top "resid [dict get $OParam $i RESID] and segid [dict get $OParam $i SEGID] and (name C22 to C29 C210 to C214)"]
+
+		set	AcylC3	[atomselect top "resid [dict get $OParam $i RESID] and segid [dict get $OParam $i SEGID] and (name C32 to C39 C310 to C314)"]
+		
+		$AcylC2	set	beta	[dict get $OParam $i C2Avg]
+
+		$AcylC3 set	beta	[dict get $OParam $i C3Avg]
+	}
+
+	$all	writepdb	$outname.pdb
+
+	$all	writepsf	$outname.psf
 }
