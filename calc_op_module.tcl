@@ -1,5 +1,4 @@
-proc orderparam-c3m { result { seltext "all" } outname} {
-  set	out3	[open $outname.log w]
+proc orderparam-c3 { result { seltext "all" } } {
   upvar $result arr
   set n [molinfo top get numframes]
   for { set i 2 } { $i <= 14 } { incr i } {
@@ -58,14 +57,12 @@ proc orderparam-c3m { result { seltext "all" } outname} {
 
     }
     set arr($i) [expr {-1.5*$sum/$nh + 0.5}]
-   puts	$out3	[expr {-1.5*$sum/$nh + 0.5}]
+#   puts [expr {-1.5*$sum/$nh + 0.5}]
   }
-  close	$out3
 }
 
 # c2 tail
-proc orderparam-c2m { result { seltext all } outname } {
-  set	out2	[open $outname.log w]
+proc orderparam-c2 { result { seltext all } } {
   upvar $result arr
   set n [molinfo top get numframes]
   for { set i 2 } { $i <= 14 } { incr i } {
@@ -141,8 +138,14 @@ proc orderparam-c2m { result { seltext all } outname } {
 
 
     }
-    set	 arr($i)	[expr {-1.5*$sum/$nh + 0.5}]
-    puts $out2		[expr {-1.5*$sum/$nh + 0.5}]
+    set arr($i) [expr {-1.5*$sum/$nh + 0.5}]
+#    puts [expr {-1.5*$sum/$nh + 0.5}]
   }
-  close $out2
 }
+
+#orderparam-c3 arr3
+#orderparam-c2 arr2
+
+
+
+

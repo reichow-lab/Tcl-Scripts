@@ -184,7 +184,7 @@ proc lip_analysis	{difsel} {
 	if {!$difsel} { 
 	
 		set tail_1_text "lipid and (name C22 to C29 C210 to C214)"
-		set tail_2_text "lipid and (name C32 to C39 C310 to C316)"
+		set tail_2_text "lipid and (name C32 to C39 C310 to C314)"
 		
 	} elseif {$difsel} {
 

@@ -1,3 +1,6 @@
+source	~/Scripts/TCL/Tcl-Scripts/calc_op_module.tcl
+source	~/Scripts/TCL/Tcl-Scripts/calc_op.tcl
+
 proc	Title	{{v ""}} {
 
 	if {$v == "-v"} {
@@ -30,6 +33,7 @@ proc	Title	{{v ""}} {
 		puts            " 			To run '$ Prot-align <MOLID> <LOGFILE-NAME> <CHAIN>'\n"
 		puts            " 			To run '$ LipNetwork <CENTER FILE> <OUTFILE> <CARBON-THRESHOLD> <ISO-THRESHOLD (def: none)> <DIFSEL (def: false)>'\n"
 		puts		"			To run '$ lipid_animator <LipList> <molid>'\n"
+		puts		"			To run '$ PerLipidOP <outname>'\n"
 	}
 }
 
@@ -173,7 +177,7 @@ proc	Prot-align	{MOLID logfile {RefChain A}} {
 			set	SegID	[$IND get segid]
 
 			set	LipTot	[atomselect $MOLID "resid $ResID and segid $SegID"]
-			set	LipTail	[atomselect $MOLID "resid $ResID and segid $SegID and (name C22 to C29 C210 to C214 C32 to C39 C310 to C316)"]
+			set	LipTail	[atomselect $MOLID "resid $ResID and segid $SegID and (name C22 to C29 C210 to C214 C32 to C39 C310 to C314)"]
 			set	LipHead	[atomselect $MOLID "resid $ResID and segid $SegID and (name O21 O22 O31 O32 O11 to O14 C1 C2 C21 C3 C31 C11 to C15 P N)"]
 
 			set	Headr	[measure rmsf $LipHead]
@@ -203,4 +207,224 @@ proc	Prot-align	{MOLID logfile {RefChain A}} {
 	puts "*"
 
 	Title
+}
+
+proc	PerLipidOP {outname} {
+
+	set	lipids	[atomselect top "lipids and name P"]
+
+	set	num_lip	[$lipids num]
+
+	set	ResList	[$lipids get resid]
+
+	set	SegList	[$lipids get segid]
+
+	set	k	1
+
+	set	prot	[atomselect top protein]
+	set	prot_x	[lindex	[measure center $prot]	0]
+	set	prot_y	[lindex [measure center $prot]	1]
+
+	foreach segid $SegList resid $ResList {
+	
+		set	lipid	[atomselect top "resid $resid and segid $segid"]
+		set	lip_x	[lindex [measure center $lipid]	0]
+		set	lip_y	[lindex [measure center $lipid] 1]
+
+		set	radius	[expr {sqrt(pow(($lip_x - $prot_x),2) + pow(($lip_y - $prot_y),2))}]
+
+		orderparam-c2	arr2	"resid $resid and segid $segid"
+		
+		set		listc2	""
+
+		foreach {carbon	parval}	[array get arr2] {
+			
+			lappend	listc2	"$carbon $parval"
+		}
+
+		orderparam-c3	arr3	"resid $resid and segid $segid"
+
+		set		listc3	""
+
+		foreach {carbon parval} [array get arr3] {
+
+			lappend	listc3	"$carbon $parval"
+		}
+
+		set	sum2	0
+		set	sum3	0
+
+		for {set i 0} {$i <= 12} {incr i} {
+
+			set	sum2	[expr [lindex $listc2 $i 1] + $sum2]
+			set	sum3	[expr [lindex $listc3 $i 1] + $sum3]
+
+			if {$i == 12} {
+			
+				set	avg2		[expr $sum2 / 13]
+				set	avg3		[expr $sum3 / 13]
+
+				dict	set	OParam	$k	RESID	$resid
+				dict	set	OParam	$k	SEGID	$segid
+				dict	set	OParam	$k	C2OP	$listc2
+				dict	set	OParam	$k	C2Avg	$avg2
+				dict	set	OParam	$k	C3OP	$listc3
+				dict	set	OParam	$k	C3Avg	$avg3
+				dict	set	OParam	$k	Radius	$radius
+				incr	k
+				puts "$k"
+			}
+		}
+	}
+
+	animate	goto	0
+
+	set	all	[atomselect top all]
+
+	$all	set	beta	0
+
+	set	out	[open $outname w]
+
+	for {set i 1} {$i < $k} {incr i} {
+
+		set	AcylC2	[atomselect top "resid [dict get $OParam $i RESID] and segid [dict get $OParam $i SEGID] and (name C22 to C29 C210 to C214)"]
+
+		set	AcylC3	[atomselect top "resid [dict get $OParam $i RESID] and segid [dict get $OParam $i SEGID] and (name C32 to C39 C310 to C314)"]
+		
+		$AcylC2	set	beta	[dict get $OParam $i C2Avg]
+
+		$AcylC3 set	beta	[dict get $OParam $i C3Avg]
+
+		puts	$out	"$resid\t$segid\t$avg2\t$avg3\t$radius\n"
+	}
+
+	$all	writepdb	$outname.pdb
+
+	$all	writepsf	$outname.psf
+
+	close	$out
+}
+
+proc	SymLipOP {outname dr dmax} {
+
+#	dmax must be a multiple of dr
+
+	set num_shell	[expr $dmax / $dr] 
+
+	set c		0
+
+	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
+
+		set	shell_upper	[atomselect top "lipids and name P and (z > 50 or z < -35) and within [expr $dmax - [expr $c * $dr]] of protein"] 
+		set	shell_lower	[atomselect top "lipids and name P and (z < 50 and z > -35) and within [expr $dmax - [expr $c * $dr]] of protein"]
+
+		$shell_upper set	beta	$i
+		$shell_lower set	beta	$i
+
+		incr	c
+	}
+
+	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
+
+		set	shell_upper_($i)	[atomselect top "lipids and name P and (z > 50 or z < -35) and beta = $i"]
+		set	shell_lower_($i)	[atomselect top "lipids and name P and (z < 50 and z > -35) and beta = $i"]
+
+		set	upper_resid_($i)	[$shell_upper_($i) get resid]
+		set	upper_segid_($i)	[$shell_upper_($i) get segid]
+
+		set	lower_resid_($i)	[$shell_lower_($i) get resid]
+		set	lower_segid_($i)	[$shell_lower_($i) get segid]
+	}
+
+	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
+
+		set	sumU	0
+		set	sumL	0
+		set	U	0
+		set	L	0
+
+		foreach resid $upper_resid_($i) segid $upper_segid_($i) {
+
+			set	sumU	[expr $sumU + [expr [[atomselect top "resid $resid and segid $segid and name C22"] get beta] + [[atomselect top "resid $resid and segid $segid and name C32"] get beta]]]
+			incr	U	2
+		}
+
+		if {$U != 0}	{set	avgU_($i)	[expr $sumU / $U]} 
+
+		foreach resid $lower_resid_($i) segid $lower_segid_($i) {
+
+			set	sumL	[expr $sumL + [expr [[atomselect top "resid $resid and segid $segid and name C22"] get beta] + [[atomselect top "resid $resid and segid $segid and name C32"] get beta]]]
+			incr	L	2
+		}
+
+		if {$L != 0}	{set	avgL_($i)	[expr $sumL / $L]}
+
+		foreach residU $upper_resid_($i) segidU $upper_segid_($i) {
+
+			set	upper	[atomselect top "resid $residU and segid $segidU and ((name C22 to C29 C210 to C214) or (name C32 to C39 C310 to C314))"]
+
+			$upper	set	beta	$avgU_($i)
+		}
+
+		foreach residL $lower_resid_($i) segidL $lower_segid_($i) {
+
+			set	lower	[atomselect top "resid $residL and segid $segidL and ((name C22 to C29 C210 to C214) or (name C32 to C39 C310 to C314))"]
+
+			$lower	set	beta	$avgL_($i)
+		}
+	}
+
+	set	all	[atomselect top all]
+
+	$all	writepsf	$outname.psf
+	$all	writepdb	$outname.pdb
+}
+
+proc	RadLipOP {outname dr dmax} {
+
+	set	num_shell	[expr $dmax / $dr]
+
+	set	c	0
+
+	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
+
+		set	shell_upper($i)	[atomselect top "lipids and name P and (z > 50 or z < -35) and within [expr $dmax - [expr $c * $dr]] of protein"]
+
+		set	shell_lower($i) [atomselect top "lipids and name P and (z < 50 and z > -35) and within [expr $dmax - [expr $c * $dr]] of protein"]
+
+		incr	c
+	}
+
+	for {set i 8} {$i >= 1} {set i [expr $i - 1]} {
+
+		$shell_upper($i) set beta $i
+		$shell_lower($i) set beta [expr $i + 10]
+	}
+
+	for {set i 0} {$i < 8} {incr i} {
+
+		set	a	[expr $i * $dr]
+		set	b	[expr $a + $dr]
+
+#		set	($a)to($b)_upper	"all and same residue as beta = [expr $i + 1]"
+#		set	($a)to($b)_lower	"all and same residue as beta = [expr $i + 11]"
+
+		puts	"Starting $a -> $b upper sn2"
+		
+		orderparam-c2m arr1 "all and same residue as beta = [expr $i + 1]" ($a)to($b)_upper_sn2
+
+		puts	"Starting $a -> $b upper sn3"
+
+		orderparam-c3m arr2 "all and same residue as beta = [expr $i + 1]" ($a)to($b)_upper_sn3
+
+		puts	"Starting $a -> $b lower sn2"
+
+		orderparam-c2m arr3 "all and same residue as beta = [expr $i + 11]" ($a)to($b)_lower_sn2
+
+		puts	"Starting $a -> $b lower sn3"
+
+		orderparam-c3m arr4 "all and same residue as beta = [expr $i + 11]" ($a)to($b)_lower_sn3
+
+		unset	arr1 arr2 arr3 arr4
+	}
 }
