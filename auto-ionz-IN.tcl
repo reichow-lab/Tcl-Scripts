@@ -114,37 +114,39 @@ proc run {ofile IonName id} {
 
 	}
 }
+proc	ionz	{in} {
 
-set	infile	[open "auto-ionz.in" r]
+	set	infile	[open $in r]
+	
+	set	inread	[read -nonewline $infile]
+	
+	set	inputs	[split $inread "\n"]
+	
+	close	$infile
+	
+	## The input file will contain the CryoEM .psf/.pdb, .psf/.dcd, CatOUT, AnOUT, CatIon, AnIon
+	##					      0          1         2      3       4      5
+	set	m	0
+	
+	foreach	line	$inputs {
 
-set	inread	[read -nonewline $infile]
+		mol new		[lindex $line 0].psf
+		
+		mol addfile	[lindex $line 0].pdb
 
-close	$infile
+		mol new		[lindex $line 1].psf
 
-set	inputs	[split $inread "\n"]
+		mol addfile	[lindex $line 1].dcd waitfor all
 
-## The input file will contain the CryoEM .psf/.pdb, .psf/.dcd, CatOUT, AnOUT, CatIon, AnIon
-##					      0          1         2      3       4      5
-set	m	0
+		align	$m [expr $m + 1]
 
-for	line	$inputs {
+		run 	[lindex $line 2] [lindex $line 4] [expr $m + 1]
 
-	mol new		[lindex $line 0].psf
+		run	[lindex $line 3] [lindex $line 5] [expr $m + 1]
 
-	mol addfile	[lindex $line 0].pdb
+		mol	delete	$m
+		mol	delete	[expr $m + 1]
 
-	mol new		[lindex $line 1].psf
-
-	mol addfile	[lindex $line 1].dcd waitfor all
-
-	align	$m [expr $m + 1]
-
-	run 	[lindex $line 2] [lindex $line 4] [expr $m + 1]
-
-	run	[lindex $line 3] [lindex $line 5] [expr $m + 1]
-
-	mol	delete	$m
-	mol	delete	[expr $m + 1]
-
-	set	m	[expr $m + 2]
+		set	m	[expr $m + 2]
+	}
 }
