@@ -208,19 +208,25 @@ proc lip_analysis	{difsel} {
 
 			animate goto $n
 
-			set	LipCenter_1	[which_center	$tail_1] 				
-			set	LipCenter_2	[which_center	$tail_2]
+			set	LipCenterList_1	[which_center	$tail_1] 				
+			set	LipCenterList_2	[which_center	$tail_2]
+
+			set	LipDen_1	[lindex $LipCenterList_1 0]
+			set	LipID_1		[lindex $LipCenterList_1 1]
+			set	LipDen_2	[lindex $LipCenterList_2 0]
+			set	LipID_2		[lindex $LipCenterList_2 1]
+
 
 			if		{$IsoLow != "none"} {
 
-				set	LipOccupy_1	[eval_density	$tail_1 $LipCenter_1]
-				set	LipOccupy_2	[eval_density	$tail_2 $LipCenter_2]
+				set	LipOccupy_1	[eval_density	$tail_1 $LipDen_1]
+				set	LipOccupy_2	[eval_density	$tail_2 $LipDen_2]
 				
-				if	{[lindex $LipOccupy_1 0] && [lindex $LipOccupy_2 0] && ($LipCenter_1 != $LipCenter_2)} {
+				if	{[lindex $LipOccupy_1 0] && [lindex $LipOccupy_2 0] && ($LipID_1 != $LipID_2)} {
 					
-					pop_matrix $LipCenter_1 $LipCenter_2
+					pop_matrix $LipID_1 $LipID_2
 
-					set     attr    [list $ResID $SegID $LipCenter_1 $LipCenter_2 $n [lindex $LipOccupy_1 1] [lindex $LipOccupy_2 1]]
+					set     attr    [list $ResID $SegID $LipID_1 $LipID_2 $n [lindex $LipOccupy_1 1] [lindex $LipOccupy_2 1]]
 
 					lappend	LipList	$attr
 
@@ -228,7 +234,7 @@ proc lip_analysis	{difsel} {
 
 				} else	{variable donothing 0}
 
-			} elseif	{$IsoLow == "none"} then	{pop_matrix $LipCenter_1 $LipCenter_2}
+			} elseif	{$IsoLow == "none"} then	{pop_matrix $LipID_1 $LipID_2}
 	
 		}
 
@@ -270,7 +276,7 @@ proc which_center	{lipid_tail} {
 		}
 	}
 
-	return	$LipDen	
+	return	[list $DEN $LipDen]
 }
 
 proc eval_density	{lipid_tail lip_center} {
