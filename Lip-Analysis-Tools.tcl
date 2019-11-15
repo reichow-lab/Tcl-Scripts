@@ -305,7 +305,7 @@ proc	PerLipidOP {outname} {
 	close	$out
 }
 
-proc	SymLipOP {outname dr dmax} {
+proc	SymLipOP {outname dr dmax zmax1 zmin2} {
 
 #	dmax must be a multiple of dr
 
@@ -315,8 +315,8 @@ proc	SymLipOP {outname dr dmax} {
 
 	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
 
-		set	shell_upper	[atomselect top "lipids and name P and (z > 50 or z < -35) and within [expr $dmax - [expr $c * $dr]] of protein"] 
-		set	shell_lower	[atomselect top "lipids and name P and (z < 50 and z > -35) and within [expr $dmax - [expr $c * $dr]] of protein"]
+		set	shell_upper	[atomselect top "lipids and name P and (z > $zmax1 or z < $zmin2) and within [expr $dmax - [expr $c * $dr]] of protein"] 
+		set	shell_lower	[atomselect top "lipids and name P and (z < $zmax1 and z > $zmin2) and within [expr $dmax - [expr $c * $dr]] of protein"]
 
 		$shell_upper set	beta	$i
 		$shell_lower set	beta	$i
@@ -380,7 +380,7 @@ proc	SymLipOP {outname dr dmax} {
 	$all	writepdb	$outname.pdb
 }
 
-proc	RadLipOP {outname dr dmax} {
+proc	RadLipOP {outname dr dmax zmax1 zmin2} {
 
 	set	num_shell	[expr $dmax / $dr]
 
@@ -388,9 +388,9 @@ proc	RadLipOP {outname dr dmax} {
 
 	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
 
-		set	shell_upper($i)	[atomselect top "lipids and name P and (z > 50 or z < -35) and within [expr $dmax - [expr $c * $dr]] of protein"]
+		set	shell_upper($i)	[atomselect top "lipids and name P and (z > $zmax1 or z < $zmin2) and within [expr $dmax - [expr $c * $dr]] of protein"]
 
-		set	shell_lower($i) [atomselect top "lipids and name P and (z < 50 and z > -35) and within [expr $dmax - [expr $c * $dr]] of protein"]
+		set	shell_lower($i) [atomselect top "lipids and name P and (z < $zmax1 and z > $zmin2) and within [expr $dmax - [expr $c * $dr]] of protein"]
 
 		incr	c
 	}
