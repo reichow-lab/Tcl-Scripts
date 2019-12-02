@@ -269,14 +269,16 @@ proc which_center	{lipid_tail} {
 
 			set hold	$dist
 
-			set LipDen	[dict get $LipDict $DEN id]
+			set LipID	[dict get $LipDict $DEN id]
+			
+			set LipDen	$DEN
 
 		} else {	set hold	$hold
 
 		}
 	}
 
-	return	[list $DEN $LipDen]
+	return	[list $LipDen $LipID]
 }
 
 proc eval_density	{lipid_tail lip_center} {
@@ -309,7 +311,7 @@ proc eval_density	{lipid_tail lip_center} {
 
 		set atom_den	[$lip_atom get interpvol0]
 
-		set atom_center	[which_center $lip_atom]
+		set atom_center	[lindex [which_center $lip_atom] 0]
 
 		set atom_Z	[lindex [measure center $lip_atom] 2]
 

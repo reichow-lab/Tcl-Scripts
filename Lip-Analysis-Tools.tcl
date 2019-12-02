@@ -305,7 +305,7 @@ proc	PerLipidOP {outname} {
 	close	$out
 }
 
-proc	SymLipOP {outname dr dmax zmax1 zmin2} {
+proc	SymLipOP {outname dr dmax zmaxU zminL} {
 
 #	dmax must be a multiple of dr
 
@@ -315,8 +315,8 @@ proc	SymLipOP {outname dr dmax zmax1 zmin2} {
 
 	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
 
-		set	shell_upper	[atomselect top "lipids and name P and (z > $zmax1 or z < $zmin2) and within [expr $dmax - [expr $c * $dr]] of protein"] 
-		set	shell_lower	[atomselect top "lipids and name P and (z < $zmax1 and z > $zmin2) and within [expr $dmax - [expr $c * $dr]] of protein"]
+		set	shell_upper	[atomselect top "lipids and name P and (z > $zmaxU or z < $zminL) and within [expr $dmax - [expr $c * $dr]] of protein"] 
+		set	shell_lower	[atomselect top "lipids and name P and (z < $zmaxU and z > $zminL) and within [expr $dmax - [expr $c * $dr]] of protein"]
 
 		$shell_upper set	beta	$i
 		$shell_lower set	beta	$i
@@ -326,8 +326,8 @@ proc	SymLipOP {outname dr dmax zmax1 zmin2} {
 
 	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
 
-		set	shell_upper_($i)	[atomselect top "lipids and name P and (z > 50 or z < -35) and beta = $i"]
-		set	shell_lower_($i)	[atomselect top "lipids and name P and (z < 50 and z > -35) and beta = $i"]
+		set	shell_upper_($i)	[atomselect top "lipids and name P and (z > $zmaxU or z < $zminL) and beta = $i"]
+		set	shell_lower_($i)	[atomselect top "lipids and name P and (z < $zmaxU and z > $zminL) and beta = $i"]
 
 		set	upper_resid_($i)	[$shell_upper_($i) get resid]
 		set	upper_segid_($i)	[$shell_upper_($i) get segid]
@@ -380,17 +380,22 @@ proc	SymLipOP {outname dr dmax zmax1 zmin2} {
 	$all	writepdb	$outname.pdb
 }
 
-proc	RadLipOP {outname dr dmax zmax1 zmin2} {
+proc	RadLipOP {outname dr dmax zmaxU zminL} {
+
+	#This splits the surrounding lipids into shells of thickness dr, out to a distance dmax. zmaxU/2 are bounds for where the inner and outer leaflets
+	# are located. 
 
 	set	num_shell	[expr $dmax / $dr]
 
 	set	c	0
-
+	# Starting with the outermost shell allows us to assign beta values within each shell due to the way atomselections work...if we start from 
+	# shell-1 then we will constantly re-write the beta-values of the shells near the center.
+	
 	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
 
-		set	shell_upper($i)	[atomselect top "lipids and name P and (z > $zmax1 or z < $zmin2) and within [expr $dmax - [expr $c * $dr]] of protein"]
+		set	shell_upper($i)	[atomselect top "lipids and name P and (z > $zmaxU or z < $zminL) and within [expr $dmax - [expr $c * $dr]] of protein"]
 
-		set	shell_lower($i) [atomselect top "lipids and name P and (z < $zmax1 and z > $zmin2) and within [expr $dmax - [expr $c * $dr]] of protein"]
+		set	shell_lower($i) [atomselect top "lipids and name P and (z < $zmaxU and z > $zminL) and within [expr $dmax - [expr $c * $dr]] of protein"]
 
 		incr	c
 	}
