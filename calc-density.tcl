@@ -11,17 +11,19 @@ proc iondensity {ofile} {
 	set	wat [atomselect top water]
 	set	watend "_watden.dx"
 
-	puts	-nonewline "Select anion by entering its name (chloride = CLA)"
-	flush	stdout
-	set	anion_name [gets stdin]
-	set	cl [atomselect top "name $anion_name"]
+#	puts	-nonewline "Select anion by entering its name (chloride = CLA)"
+#	flush	stdout
+#	set	anion_name [gets stdin]
+	set	cl [atomselect top "name CLA"]
 	set	clend "_anden.dx"
 
-	puts	-nonewline "Select cation by entering its name (potassium = POT, sodium = SOD)"
-	flush	stdout
-	set	cation_name [gets stdin]
-	set	k [atomselect top "name $cation_name"]
-	set	kend "_catden.dx"
+#	puts	-nonewline "Select cation by entering its name (potassium = POT, sodium = SOD)"
+#	flush	stdout
+#	set	cation_name [gets stdin]
+	set	s [atomselect top "name SOD"]
+	set	k [atomselect top "name POT"]
+	set	kend "_potden.dx"
+	set	send "_sodden.dx"
 
 	puts "Beginning water density calculation."
 
@@ -31,9 +33,10 @@ proc iondensity {ofile} {
 
 	volmap density $cl -allframes -combine avg -res 0.649 -o $ofile$clend
 
-	puts "Finished chloride, starting potassium density calculation."
+	puts "Finished chloride, starting cation density calculation."
 
-	volmap density $k -allframes -combine avg -res 0.649 -o $ofile$kend
+	if {[$s num] != 0} {volmap density $s -allframes -combine avg -res 0.649 -o $ofile$send}
+	if {[$k num] != 0} {volmap density $k -allframes -combine avg -res 0.649 -o $ofile$kend}
 
 	puts "Finished all calculations."
 }
@@ -83,7 +86,7 @@ proc proteindensity {ofile} {
 	volmap	density $protein -allframes -combine avg -res 0.649 -o $ofile$prot_end
 }
 
-proc autodmpc {in} {
+proc autodensity {in} {
 
 	set     infile  [open $in r]
 
@@ -110,7 +113,7 @@ proc autodmpc {in} {
 
 		align   $m [expr $m + 1]
 
-		dmpcdensity	[lindex $line 2]
+		iondensity	[lindex $line 2]
 
 		mol 	delete	$m
 		mol	delete	[expr $m + 1]

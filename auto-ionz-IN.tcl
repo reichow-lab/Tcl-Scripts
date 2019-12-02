@@ -60,7 +60,8 @@ proc run {ofile IonName id} {
 
 	set molid $id
 
-	set ION [atomselect $molid "name $ion_name and not ((abs(z) < 40) and (x^2 + y^2 > 350))"]
+#	set ION [atomselect $molid "name $ion_name and not ((abs(z) < 40) and (x^2 + y^2 > 350))"]
+	set ION [atomselect $molid "name $ion_name and not ((abs(z) < 40) and (x^2 + y^2 > 500))"]
 
 	set ind [$ION get index]
 
