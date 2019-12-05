@@ -256,13 +256,18 @@ proc	PerLipidOP {outname} {
 
 		for {set i 0} {$i <= 12} {incr i} {
 
-			set	sum2	[expr [lindex $listc2 $i 1] + $sum2]
-			set	sum3	[expr [lindex $listc3 $i 1] + $sum3]
+# Only averaging carbons 3 to 11 (appear in 'flat' region of figure), thus only looking at contributions of indices i -> 9
+
+			if {$i >= 1 && $i <= 9} {
+
+				set	sum2	[expr [lindex $listc2 $i 1] + $sum2]
+				set	sum3	[expr [lindex $listc3 $i 1] + $sum3]
+			}
 
 			if {$i == 12} {
 			
-				set	avg2		[expr $sum2 / 13]
-				set	avg3		[expr $sum3 / 13]
+				set	avg2		[expr $sum2 / 9]
+				set	avg3		[expr $sum3 / 9]
 
 				dict	set	OParam	$k	RESID	$resid
 				dict	set	OParam	$k	SEGID	$segid
