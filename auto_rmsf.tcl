@@ -95,8 +95,9 @@ proc	 autormsf    {in} {
 
                  run     [lindex $line 2] [lindex $line 3] [lindex $line 4]
 
-                 mol     delete  $m
-                 mol     delete  [expr $m + 1]
+                # mol     delete  $m
+                # mol     delete  [expr $m + 1]
+		 animate delete	 all
 
                  set     m       [expr $m + 2]
          }
