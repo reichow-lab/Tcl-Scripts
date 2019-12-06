@@ -60,12 +60,12 @@ proc run {ofile resi resf} {
 
 		puts $output "$RES\t$rmsf_calc"
 
-
 		puts "rmsf of residue $RES out of $final calculated"
-	
-	close	$output
 
 	}
+
+	close	$output
+
 }
 proc	 autormsf    {in} {
 
