@@ -93,7 +93,7 @@ proc	 autormsf    {in} {
 
                  align   $m [expr $m + 1]
 
-                 run     [lindex $line 2] [lindex $line 3] [expr $m + 4]
+                 run     [lindex $line 2] [lindex $line 3] [lindex $line 4]
 
                  mol     delete  $m
                  mol     delete  [expr $m + 1]
