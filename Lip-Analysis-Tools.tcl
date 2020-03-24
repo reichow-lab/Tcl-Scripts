@@ -256,13 +256,18 @@ proc	PerLipidOP {outname} {
 
 		for {set i 0} {$i <= 12} {incr i} {
 
-			set	sum2	[expr [lindex $listc2 $i 1] + $sum2]
-			set	sum3	[expr [lindex $listc3 $i 1] + $sum3]
+# Only averaging carbons 3 to 11 (appear in 'flat' region of figure), thus only looking at contributions of indices i -> 9
+
+			if {$i >= 1 && $i <= 9} {
+
+				set	sum2	[expr [lindex $listc2 $i 1] + $sum2]
+				set	sum3	[expr [lindex $listc3 $i 1] + $sum3]
+			}
 
 			if {$i == 12} {
 			
-				set	avg2		[expr $sum2 / 13]
-				set	avg3		[expr $sum3 / 13]
+				set	avg2		[expr $sum2 / 9]
+				set	avg3		[expr $sum3 / 9]
 
 				dict	set	OParam	$k	RESID	$resid
 				dict	set	OParam	$k	SEGID	$segid
@@ -313,6 +318,8 @@ proc	SymLipOP {outname dr dmax zmaxU zminL} {
 
 	set c		0
 
+	# isolate shells of lipids that are dr angstroms thick (only affecting the beta-value of the phosphates)
+
 	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
 
 		set	shell_upper	[atomselect top "lipids and name P and (z > $zmaxU or z < $zminL) and within [expr $dmax - [expr $c * $dr]] of protein"] 
@@ -323,6 +330,8 @@ proc	SymLipOP {outname dr dmax zmaxU zminL} {
 
 		incr	c
 	}
+
+	# Select the lipids for the upper and lower leaflets
 
 	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
 
@@ -336,12 +345,16 @@ proc	SymLipOP {outname dr dmax zmaxU zminL} {
 		set	lower_segid_($i)	[$shell_lower_($i) get segid]
 	}
 
+	# Calculate the average Scd Order Parameter for each shell/leaflet
+
 	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
 
 		set	sumU	0
 		set	sumL	0
 		set	U	0
 		set	L	0
+
+		# Sum all of the beta fields from each lipid-tail carbon within a shell/leaflet, and keep track of the number of carbons being summed
 
 		foreach resid $upper_resid_($i) segid $upper_segid_($i) {
 
@@ -359,16 +372,20 @@ proc	SymLipOP {outname dr dmax zmaxU zminL} {
 
 		if {$L != 0}	{set	avgL_($i)	[expr $sumL / $L]}
 
+		# Colour the lipids (whole) by the average beta-values of the lipid-tails
+
 		foreach residU $upper_resid_($i) segidU $upper_segid_($i) {
 
-			set	upper	[atomselect top "resid $residU and segid $segidU and ((name C22 to C29 C210 to C214) or (name C32 to C39 C310 to C314))"]
+		       #set	upper	[atomselect top "resid $residU and segid $segidU and ((name C22 to C29 C210 to C214) or (name C32 to C39 C310 to C314))"]
+			set	upper	[atomselect top "resid $residU and segid $segidU"]
 
 			$upper	set	beta	$avgU_($i)
 		}
 
 		foreach residL $lower_resid_($i) segidL $lower_segid_($i) {
 
-			set	lower	[atomselect top "resid $residL and segid $segidL and ((name C22 to C29 C210 to C214) or (name C32 to C39 C310 to C314))"]
+		       #set	lower	[atomselect top "resid $residL and segid $segidL and ((name C22 to C29 C210 to C214) or (name C32 to C39 C310 to C314))"]
+			set	lower	[atomselect top "resid $residL and segid $segidL"]	
 
 			$lower	set	beta	$avgL_($i)
 		}
@@ -400,7 +417,7 @@ proc	RadLipOP {outname dr dmax zmaxU zminL} {
 		incr	c
 	}
 
-	for {set i 8} {$i >= 1} {set i [expr $i - 1]} {
+	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
 
 		$shell_upper($i) set beta $i
 		$shell_lower($i) set beta [expr $i + 10]
