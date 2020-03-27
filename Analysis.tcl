@@ -1,9 +1,6 @@
 ##########################################################################
-<<<<<<< HEAD
 ##  A comprehensive script with different processes of MD analysis	##
-=======
 ##	A comprehensive script with different processes of MD analysis	##
->>>>>>> new_classify
 ##									##
 ##	Portland State University					##
 ##	P.I.	: Steve Reichow						##
@@ -21,15 +18,11 @@ proc title {{opt 0}} {
 	puts "<dihedral_time>   Measure the dihedral angles of a selection"
 	puts "<dihedral_z>      Measure the dihedral angle versus z-coord of a selection"
 	puts "<cent_o_mass {0}> Measure the center of mass of the selection."
-<<<<<<< HEAD
 	puts "<ave_pos>         Move the atoms of the selection to their average position"
-=======
 	if {$opt} {puts "<ave_pos>         Move the atoms of the selection to their average position"}
 	if {$opt} {puts "<seed_z>          Find the frame closest to your z-value for a seed"}
->>>>>>> new_classify
 	puts "<title {0}>    To show these commands again."
 }
-title
 
 
 ## Recursive functions used throughout

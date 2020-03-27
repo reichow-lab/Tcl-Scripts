@@ -358,16 +358,34 @@ proc	SymLipOP {outname dr dmax zmaxU zminL} {
 
 		foreach resid $upper_resid_($i) segid $upper_segid_($i) {
 
-			set	sumU	[expr $sumU + [expr [[atomselect top "resid $resid and segid $segid and name C22"] get beta] + [[atomselect top "resid $resid and segid $segid and name C32"] get beta]]]
-			incr	U	2
+			set	tail_c	[atomselect top "resid $resid and segid $segid and (name C22 to C29 C210 C211 C32 to C39 C310 C311)"]
+			set	CD_list	[$tail_c get beta]
+
+			foreach val $CD_list { 
+				
+				set	sumU	[expr $sumU + $val]
+				
+				incr	U
+			}
+
+			unset	tail_c CD_list
 		}
 
 		if {$U != 0}	{set	avgU_($i)	[expr $sumU / $U]} 
-
+		 
 		foreach resid $lower_resid_($i) segid $lower_segid_($i) {
 
-			set	sumL	[expr $sumL + [expr [[atomselect top "resid $resid and segid $segid and name C22"] get beta] + [[atomselect top "resid $resid and segid $segid and name C32"] get beta]]]
-			incr	L	2
+			set	tail_c	[atomselect top "resid $resid and segid $segid and (name C22 to C29 C210 C211 C32 to C39 C310 C311)"]
+			set     CD_list [$tail_c get beta]
+
+			foreach val $CD_list {
+
+				set     sumL    [expr $sumL + $val]
+
+				incr	L
+			}
+
+			unset	tail_c CD_list
 		}
 
 		if {$L != 0}	{set	avgL_($i)	[expr $sumL / $L]}
