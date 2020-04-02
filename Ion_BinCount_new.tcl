@@ -4,18 +4,13 @@
 ##									##
 ##	Portland State University					##
 ##	P.I.	: Steve Reichow						##
-##	Author	: Matthew Veter						##
+##	Author	: Bassam Haddad						##
 ##########################################################################
 
 
-#puts -nonewline "Select ion by entering its name (potassium = POT, sodium = SOD etc...).  "
-#flush stdout
+puts "Type the following to run program: 'run <output name> <zmin> <zmax> <holeinput>'"
 
-#set ion_name [gets stdin]
-
-puts "Type the following to run program: 'run <output name> <zmin> <zmax>'"
-
-proc run {ofile zmin zmax} {
+proc run {ofile zmin zmax holeinput} {
 
 	global ion_name
 
@@ -24,6 +19,10 @@ proc run {ofile zmin zmax} {
 	set numframes [molinfo top get numframes]
 
 	set output [open $ofile w]
+
+	# hole file has position along pore (index: 0) and radius (index: 1)
+
+	set holfile	[open $holeinput r]
 
 ## Loops through each of the frames to get a count at each timestep
 
