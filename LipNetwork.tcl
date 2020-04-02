@@ -26,7 +26,7 @@
 #				LipNetwork to use center-specific Isolows which are in the CentersFile.
 #
 ################################
-source	~/Scripts/TCL/Tcl-Scripts/matrix.tcl
+#source	~/Scripts/TCL/Tcl-Scripts/matrix.tcl
 source	~/Scripts/TCL/Tcl-Scripts/Lip-Analysis-Tools.tcl
 source	~/Scripts/TCL/Tcl-Scripts/Animate_Lipid.tcl
 ################################

@@ -9,7 +9,7 @@ proc get_lipid_list     {} {
 
         global NumFrames 
 	puts "there are $NumFrames frames"
-	set IndList [[atomselect top "protein and resid 189 192 and name CZ"] get index]
+	set IndList [[atomselect top "protein and ((resid 189 192 and name CZ) or (resid 68 and name CD))"] get index]
 
 #	a list of all interacting lipids is created for each protein residue
 
@@ -21,11 +21,11 @@ proc get_lipid_list     {} {
 
 			animate goto $n
 
-			set lipid       [atomselect top "name P and within 5 of index $INDEX"]
+			set lipid       [atomselect top "name P N and within 5 of index $INDEX"]
 
 			$lipid                  set beta 1
 
-			set     hold            [[atomselect top "name P and beta = 1"] get index]
+			set     hold            [[atomselect top "name P N and beta = 1"] get index]
 
 			set	Phosp_List	[concat [lindex $Phosp_List] [lindex $hold]]
 
