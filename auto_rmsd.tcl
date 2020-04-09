@@ -34,36 +34,32 @@ proc align {rmolid smolid} {
         }
 
 }
-proc run {ofile reslistin} {
+proc run {ofile resi resf} {
 
 	set initframe 0
 
 	set finaframe [expr [molinfo top get numframes] - 1]
 
-	set output	[open $ofile w]
+	set output [open $ofile w]
 
-	set infile	[open $reslistin r]
-	
-	set reslist	[split [read -nonewline $infile] "\n"]
+	set rmsd_ref	[atomselect top "protein and name CA" frame 0]
 
-	close	$infile
+	for {set j $initframe} {$j <= $finaframe} {incr j} {
 
-	foreach RES $reslist {
+		animate goto $j
 
-		set CG [atomselect top "resid [lindex $RES 0] and name [lindex $RES 1]"]
+		set rmsd_struc	[atomselect top "protein and name CA"]
 
-		set rmsf_calc [measure rmsf $CG]
+		set rmsd_calc	[measure rmsd $rmsd_struc $rmsd_ref]
 
-		puts $rmsf_calc
-
-		puts $output "$RES\t$rmsf_calc"
+		puts $output "$j\t$rmsd_calc"
 
 	}
 
 	close	$output
 
 }
-proc	 autormsf    {in} {
+proc	 autormsd    {in} {
 
          set     infile  [open $in r]
 
@@ -73,8 +69,8 @@ proc	 autormsf    {in} {
 
          close   $infile
 
-         ## The input file will contain the CryoEM .psf/.pdb, .psf/.dcd, OUT, Reslist
-         ##                                            0          1       2      3    
+         ## The input file will contain the CryoEM .psf/.pdb, .psf/.dcd, OUT, ResI, ResF
+         ##                                            0          1       2    3     4      
          set     m       0
 
          foreach line    $inputs {
@@ -89,7 +85,7 @@ proc	 autormsf    {in} {
 
                  align   $m [expr $m + 1]
 
-                 run     [lindex $line 2] [lindex $line 3] 
+                 run     [lindex $line 2] [lindex $line 3] [lindex $line 4]
 
                 # mol     delete  $m
                 # mol     delete  [expr $m + 1]

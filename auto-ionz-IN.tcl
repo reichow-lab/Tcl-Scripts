@@ -111,7 +111,7 @@ proc run {ofile IonName id} {
 
 		close	$output
 
-#		puts "$n of $num_ion ion trajectories calculated"
+		puts "$n of $num_ion ion trajectories calculated"
 
 	}
 }
@@ -145,8 +145,9 @@ proc	ionz	{in} {
 
 		run	[lindex $line 3] [lindex $line 5] [expr $m + 1]
 
-		mol	delete	$m
-		mol	delete	[expr $m + 1]
+		mol	delete	all
+		# mol	delete	$m
+		# mol	delete	[expr $m + 1]
 
 		set	m	[expr $m + 2]
 	}

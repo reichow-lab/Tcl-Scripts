@@ -8,7 +8,7 @@
 ##########################################################################
 
 
-puts "Type the following to run program: 'run <output name> <zmin> <zmax> <binsize>'"
+puts "Type the following to run program: 'run <output name> <zmin> <zmax>'"
 
 proc run {ofile zmin zmax} {
 
