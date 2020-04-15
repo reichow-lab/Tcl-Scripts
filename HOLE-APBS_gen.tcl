@@ -11,22 +11,22 @@ puts "To use this program:\n\t\tholegen <outfile> <PDBOutName> <RefMolID>\n\t\ta
 
 proc holegen {ofile PDB RefMolID} {
 
-	# Center system on channel
+	# Center reference on channel
 
-	set all		[atomselect top all]
-	set prot	[atomselect top protein]
+	set ref_all	[atomselect $RefMolID all]
+	set ref_prot	[atomselect $RefMolID protein]
 
-	set prot_cen [measure center $prot]
+	set prot_cen [measure center $ref_prot]
 
 	set x   [expr [lindex $prot_cen 0] * -1]
 	set y   [expr [lindex $prot_cen 1] * -1]
 	set z   [expr [lindex $prot_cen 2] * -1]
 	set vec [list $x $y $z]
-	$all moveby $vec
+	$ref_all moveby $vec
 
 	set numframes [molinfo top get numframes]
 
-	# Align Protein
+	# Align Protein (align system to the centered reference
 
 	set ref_frame [atomselect $RefMolID "protein and name CA"]
 
