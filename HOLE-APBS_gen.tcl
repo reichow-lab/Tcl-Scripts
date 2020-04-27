@@ -94,4 +94,5 @@ proc auto_holegen {in} {
 		holegen		[lindex $line 2] [lindex $line 3] $m
 
 		set	m	[expr $m + 2]
+	}
 }
