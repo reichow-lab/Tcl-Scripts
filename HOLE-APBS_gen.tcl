@@ -26,7 +26,7 @@ proc holegen {ofile PDB RefMolID} {
 
 	set numframes [molinfo top get numframes]
 
-	# Align Protein (align system to the centered reference
+	# Align Protein (align system to the centered reference)
 
 	set ref_frame [atomselect $RefMolID "protein and name CA"]
 
@@ -35,7 +35,7 @@ proc holegen {ofile PDB RefMolID} {
                 animate goto $i
 
                 set align_frame [atomselect top "protein and name CA"]
-
+		set all	[atomselect top all]
                 set trans_matrix [measure fit $align_frame $ref_frame]
 
                 $all move $trans_matrix
@@ -90,7 +90,7 @@ proc auto_holegen {in} {
 		mol new     	[lindex $line 0].pdb
 		mol new         [lindex $line 1].psf
 		mol addfile     [lindex $line 1].dcd waitfor all
-		
+
 		holegen		[lindex $line 2] [lindex $line 3] $m
 
 		set	m	[expr $m + 2]
