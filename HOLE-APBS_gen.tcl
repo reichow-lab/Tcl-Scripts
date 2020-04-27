@@ -54,7 +54,7 @@ proc holegen {ofile PDB RefMolID} {
 		incr n
 
 		animate goto $i
-
+		set prot [atomselect top protein]
 		$prot writepdb $pdbfilename
 
 		set HOLEout [open $HOLEinp w]
