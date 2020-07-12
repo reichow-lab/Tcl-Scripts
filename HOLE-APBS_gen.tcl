@@ -10,6 +10,7 @@
 puts "To use this program:\n\t\tholegen <outfile> <PDBOutName> <RefMolID>\n\t\tauto_holegen <InputFile>"
 
 proc holegen {ofile PDB RefMolID} {
+proc holegen {ofile PDB RefMolID PDBOUT} {
 
 	# Center reference on channel
 
@@ -50,6 +51,7 @@ proc holegen {ofile PDB RefMolID} {
 		set APBSinp "$ofile-APBS-$n.in"
 
 		set pdbfilename "$PDB$n.pdb"
+		set pdbfilename "$PDB-$n.pdb"
 
 		incr n
 
@@ -61,6 +63,7 @@ proc holegen {ofile PDB RefMolID} {
 		set APBSout [open $APBSinp w]
 
 		puts	$HOLEout	"coord\t$pdbfilename"
+		puts	$HOLEout	"coord\t./$PDBOUT-$n.pdb"
 		puts	$HOLEout	"radius\t/home/bassam/hole2/rad/simple.rad"
 		puts	$HOLEout	"cvect\t0 0 1"
 		puts	$HOLEout	"cpoint\t0 0 0"
@@ -69,6 +72,7 @@ proc holegen {ofile PDB RefMolID} {
 		close	$HOLEout
 
 		puts	$APBSout	"read\n\tmol pqr $PDB$n.pqr\nend\nelec\n\tmg-auto\n\tdime 225 193 289\n\tcglen 149.6544 141.2020 217.5235\n\tfglen 108.0320 103.0600 147.9550\t\ncgcent mol 1\n\tfgcent mol 1\n\tmol 1\n\tlpbe\n\tbcfl sdh\n\tpdie 2.0000\n\tsdie 80.000\n\tsrfm smol\n\tchgm spl2\n\tsdens 10.00\n\tsrad 1.40\n\tswin 0.30\n\ttemp 310\n\tion 1 0.150 2.0\n\tion -1 0.150 2.0\n\tcalcenergy no\n\tcalcforce no\n\twrite pot dx $PDB$n.dx\nend\nquit"
+		puts	$APBSout	"read\n\tmol pqr ./$PDBOUT-$n.pqr\nend\nelec\n\tmg-auto\n\tdime 225 193 289\n\tcglen 149.6544 141.2020 217.5235\n\tfglen 108.0320 103.0600 147.9550\n\tcgcent mol 1\n\tfgcent mol 1\n\tmol 1\n\tlpbe\n\tbcfl sdh\n\tpdie 2.0000\n\tsdie 80.000\n\tsrfm smol\n\tchgm spl2\n\tsdens 10.00\n\tsrad 1.40\n\tswin 0.30\n\ttemp 310\n\tion 1 0.150 2.0\n\tion -1 0.150 2.0\n\tcalcenergy no\n\tcalcforce no\n\twrite pot dx $PDBOUT-$n.dx\nend\nquit"
 		close	$APBSout
 	}
 }
@@ -82,6 +86,8 @@ proc auto_holegen {in} {
 
 	## The input file will contain:		  Ref-PDB	  PSF/DCD	OutFileName	PDBOutName	
 	##					     0		     1		     2		    3
+	## The input file will contain:		  Ref-PDB	  PSF/DCD	OutFileName	PDBOutName	PDBOUTName
+	##					     0		     1		     2		    3	 	    4
 	
 	set     m       0
 
@@ -92,6 +98,7 @@ proc auto_holegen {in} {
 		mol addfile     [lindex $line 1].dcd waitfor all
 
 		holegen		[lindex $line 2] [lindex $line 3] $m
+		holegen		[lindex $line 2] [lindex $line 3] $m [lindex $line 4]
 
 		set	m	[expr $m + 2]
 	}
