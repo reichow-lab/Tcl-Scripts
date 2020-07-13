@@ -297,6 +297,8 @@ proc	RadLipOP {outname dr dmax zmaxU zminL} {
 proc RadLipEnergy {outname dr dmax zmaxU zminL} {
 	set	num_shell	[expr $dmax / $dr]
 	set	c	0
+	set all [atomselect top all]
+	$all set beta 0
 	# Starting with the outermost shell allows us to assign beta values within each shell due to the way atomselections work...if we start from
 	# shell-1 then we will constantly re-write the beta-values of the shells near the center.
 	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
