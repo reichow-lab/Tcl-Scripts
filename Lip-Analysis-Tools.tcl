@@ -317,10 +317,10 @@ proc RadLipEnergy {outname dr dmax zmaxU zminL} {
 		set sel2_l [atomselect top "all and same residue as beta = [expr $i + 12]"]
 		set prot [atomselect top protein]
 		set timemult 2
-		Calc_Energy prot-to-($a)_upper-leaflet_energy.txt 310 timemult $prot $sel1_u
-		Calc_Energy ($a)-to-($b)_upper-leaflet_energy.txt 310 timemult $sel1_u $sel2_u
-		Calc_Energy prot-to-($a)_lower-leaflet_energy.txt 310 timemult $prot $sel1_l
-		Calc_Energy ($a)-to-($b)_lower-leaflet_energy.txt 310 timemult $sel1_l $sel2_l
+		Calc_Energy prot-to-($a)_upper-leaflet_energy.txt 310 $timemult $prot $sel1_u
+		Calc_Energy ($a)-to-($b)_upper-leaflet_energy.txt 310 $timemult $sel1_u $sel2_u
+		Calc_Energy prot-to-($a)_lower-leaflet_energy.txt 310 $timemult $prot $sel1_l
+		Calc_Energy ($a)-to-($b)_lower-leaflet_energy.txt 310 $timemult $sel1_l $sel2_l
 
 	}
 }
