@@ -65,7 +65,7 @@ proc align {} {
 	set ref_frame [atomselect $ref_molid "protein and name CA" frame 0]
 	set n 1
 	set sys [atomselect $sel_molid all]
-	set frame_percent [expr {round($numframes / 30)}]
+	set frame_percent [expr {round($numframes / 10)}]
 	for {set i 0} {$i < $numframes} {incr i} {
                 animate goto $i
                 set align_frame [atomselect $sel_molid "protein and name CA"]
