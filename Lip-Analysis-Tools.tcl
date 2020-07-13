@@ -1,5 +1,6 @@
 source	~/Scripts/TCL/Tcl-Scripts/calc_op_module.tcl
 source	~/Scripts/TCL/Tcl-Scripts/calc_op.tcl
+source ~/Scripts/TCL/Tcl-Scripts/namd-energy.tcl
 
 proc	Title	{{v ""}} {
 	if {$v == "-v"} {
@@ -290,5 +291,36 @@ proc	RadLipOP {outname dr dmax zmaxU zminL} {
 		puts	"Starting $a -> $b lower sn3"
 		orderparam-c3m arr4 "all and same residue as beta = [expr $i + 11]" ($a)to($b)_lower_sn3
 		unset	arr1 arr2 arr3 arr4
+	}
+}
+
+proc RadLipEnergy {outname dr dmax zmaxU zminL} {
+	set	num_shell	[expr $dmax / $dr]
+	set	c	0
+	# Starting with the outermost shell allows us to assign beta values within each shell due to the way atomselections work...if we start from
+	# shell-1 then we will constantly re-write the beta-values of the shells near the center.
+	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
+		set	shell_upper($i)	[atomselect top "lipids and name P and (z > $zmaxU or z < $zminL) and within [expr $dmax - [expr $c * $dr]] of protein"]
+		set	shell_lower($i) [atomselect top "lipids and name P and (z < $zmaxU and z > $zminL) and within [expr $dmax - [expr $c * $dr]] of protein"]
+		incr	c
+	}
+	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
+		$shell_upper($i) set beta $i
+		$shell_lower($i) set beta [expr $i + 10]
+	}
+	for {set i 0} {$i < 8} {incr i} {
+		set	a	[expr $i * $dr]
+		set	b	[expr $a + $dr]
+		set sel1_u [atomselect top "all and same residue as beta = [expr $i + 1]"]
+		set sel1_l [atomselect top "all and same residue as beta = [expr $i + 11]"]
+		set sel2_u [atomselect top "all and same residue as beta = [expr $i + 2]"]
+		set sel2_l [atomselect top "all and same residue as beta = [expr $i + 12]"]
+		set prot [atomselect top protein]
+		set timemult 2
+		Calc_Energy prot-to-($a)_upper-leaflet_energy.txt 310 timemult $prot $sel1_u
+		Calc_Energy ($a)-to-($b)_upper-leaflet_energy.txt 310 timemult $sel1_u $sel2_u
+		Calc_Energy prot-to-($a)_lower-leaflet_energy.txt 310 timemult $prot $sel1_l
+		Calc_Energy ($a)-to-($b)_lower-leaflet_energy.txt 310 timemult $sel1_l $sel2_l
+
 	}
 }
