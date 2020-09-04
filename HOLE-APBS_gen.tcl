@@ -10,7 +10,7 @@
 puts "To use this program:\n\t\tholegen <outfile> <PDBOutName> <RefMolID>\n\t\tauto_holegen <InputFile>"
 
 proc holegen {ofile PDB RefMolID} {
-#proc holegen {ofile PDB RefMolID PDBOUT} {
+#proc holegen {ofile PDB RefMolID PDBOUT} {}
 
 	# Center reference on channel
 
@@ -37,7 +37,7 @@ proc holegen {ofile PDB RefMolID} {
 		set all	[atomselect top all]
     set trans_matrix [measure fit $align_frame $ref_frame]
 		$all move $trans_matrix
-}
+	}
 
 	set n 0
 
@@ -66,6 +66,7 @@ proc holegen {ofile PDB RefMolID} {
 
 		puts	$APBSout	"read\n\tmol pqr $PDB$n.pqr\nend\nelec\n\tmg-auto\n\tdime 225 193 289\n\tcglen 149.6544 141.2020 217.5235\n\tfglen 108.0320 103.0600 147.9550\t\ncgcent mol 1\n\tfgcent mol 1\n\tmol 1\n\tlpbe\n\tbcfl sdh\n\tpdie 2.0000\n\tsdie 80.000\n\tsrfm smol\n\tchgm spl2\n\tsdens 10.00\n\tsrad 1.40\n\tswin 0.30\n\ttemp 310\n\tion 1 0.150 2.0\n\tion -1 0.150 2.0\n\tcalcenergy no\n\tcalcforce no\n\twrite pot dx $PDB$n.dx\nend\nquit"
 		close	$APBSout
+	}
 }
 
 proc auto_holegen {in} {
@@ -92,5 +93,5 @@ proc auto_holegen {in} {
 		holegen		[lindex $line 2] [lindex $line 3] $m [lindex $line 4]
 
 		set	m	[expr $m + 2]
-	}
+		}
 }
