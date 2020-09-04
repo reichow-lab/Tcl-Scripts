@@ -9,8 +9,8 @@
 
 puts "To use this program:\n\t\tholegen <outfile> <PDBOutName> <RefMolID>\n\t\tauto_holegen <InputFile>"
 
-#roc holegen {ofile PDB RefMolID} {
-proc holegen {ofile PDB RefMolID PDBOUT} {
+proc holegen {ofile PDB RefMolID} {
+#proc holegen {ofile PDB RefMolID PDBOUT} {
 
 	# Center reference on channel
 
@@ -32,16 +32,12 @@ proc holegen {ofile PDB RefMolID PDBOUT} {
 	set ref_frame [atomselect $RefMolID "protein and name CA"]
 
 	for {set i 0} {$i < $numframes} {incr i} {
-
-                animate goto $i
-
-                set align_frame [atomselect top "protein and name CA"]
+  	animate goto $i
+    set align_frame [atomselect top "protein and name CA"]
 		set all	[atomselect top all]
-                set trans_matrix [measure fit $align_frame $ref_frame]
-
-                $all move $trans_matrix
-
-        }
+    set trans_matrix [measure fit $align_frame $ref_frame]
+		$all move $trans_matrix
+}
 
 	set n 0
 
@@ -50,11 +46,9 @@ proc holegen {ofile PDB RefMolID PDBOUT} {
 		set HOLEinp "$ofile-HOLE-$n.in"
 		set APBSinp "$ofile-APBS-$n.in"
 
-		set pdbfilename "$PDB$n.pdb"
+		#set pdbfilename "$PDB$n.pdb"
 		set pdbfilename "$PDB-$n.pdb"
-
 		incr n
-
 		animate goto $i
 		set prot [atomselect top protein]
 		$prot writepdb $pdbfilename
@@ -63,7 +57,6 @@ proc holegen {ofile PDB RefMolID PDBOUT} {
 		set APBSout [open $APBSinp w]
 
 		puts	$HOLEout	"coord\t$pdbfilename"
-		puts	$HOLEout	"coord\t./$PDBOUT-$n.pdb"
 		puts	$HOLEout	"radius\t/home/bassam/hole2/rad/simple.rad"
 		puts	$HOLEout	"cvect\t0 0 1"
 		puts	$HOLEout	"cpoint\t0 0 0"
@@ -72,7 +65,6 @@ proc holegen {ofile PDB RefMolID PDBOUT} {
 		close	$HOLEout
 
 		puts	$APBSout	"read\n\tmol pqr $PDB$n.pqr\nend\nelec\n\tmg-auto\n\tdime 225 193 289\n\tcglen 149.6544 141.2020 217.5235\n\tfglen 108.0320 103.0600 147.9550\t\ncgcent mol 1\n\tfgcent mol 1\n\tmol 1\n\tlpbe\n\tbcfl sdh\n\tpdie 2.0000\n\tsdie 80.000\n\tsrfm smol\n\tchgm spl2\n\tsdens 10.00\n\tsrad 1.40\n\tswin 0.30\n\ttemp 310\n\tion 1 0.150 2.0\n\tion -1 0.150 2.0\n\tcalcenergy no\n\tcalcforce no\n\twrite pot dx $PDB$n.dx\nend\nquit"
-		puts	$APBSout	"read\n\tmol pqr ./$PDBOUT-$n.pqr\nend\nelec\n\tmg-auto\n\tdime 225 193 289\n\tcglen 149.6544 141.2020 217.5235\n\tfglen 108.0320 103.0600 147.9550\n\tcgcent mol 1\n\tfgcent mol 1\n\tmol 1\n\tlpbe\n\tbcfl sdh\n\tpdie 2.0000\n\tsdie 80.000\n\tsrfm smol\n\tchgm spl2\n\tsdens 10.00\n\tsrad 1.40\n\tswin 0.30\n\ttemp 310\n\tion 1 0.150 2.0\n\tion -1 0.150 2.0\n\tcalcenergy no\n\tcalcforce no\n\twrite pot dx $PDBOUT-$n.dx\nend\nquit"
 		close	$APBSout
 	}
 }
