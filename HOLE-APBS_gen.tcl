@@ -1,7 +1,7 @@
 #	Program:	HOLE-APBS_gen.tcl
 #	Author:		Bassam Haddad
 #
-#	This program prepares the appropriate input files for both BOLE and PDB2PQR/APBS. The inputs to this program are trajectories for any gap junction
+#	This program prepares the appropriate input files for both HOLE and PDB2PQR/APBS. The inputs to this program are trajectories for any gap junction
 #	with or without system components (i.e. water, lipids, ions). A reference pdb should be provided to ensure the geometric center of the system is
 #	the protein pore. This also ensures the pore axis is along the z-axis in case the protein drifts throughout the simulation.
 #
@@ -9,7 +9,7 @@
 
 puts "To use this program:\n\t\tholegen <outfile> <PDBOutName> <RefMolID>\n\t\tauto_holegen <InputFile>"
 
-proc holegen {ofile PDB RefMolID} {
+#roc holegen {ofile PDB RefMolID} {
 proc holegen {ofile PDB RefMolID PDBOUT} {
 
 	# Center reference on channel
@@ -78,17 +78,17 @@ proc holegen {ofile PDB RefMolID PDBOUT} {
 }
 
 proc auto_holegen {in} {
-	
+
 	set     infile  [open $in r]
 	set     inread  [read -nonewline $infile]
 	set     inputs  [split $inread "\n"]
-	close   $infile 
+	close   $infile
 
-	## The input file will contain:		  Ref-PDB	  PSF/DCD	OutFileName	PDBOutName	
+	## The input file will contain:		  Ref-PDB	  PSF/DCD	OutFileName	PDBOutName
 	##					     0		     1		     2		    3
 	## The input file will contain:		  Ref-PDB	  PSF/DCD	OutFileName	PDBOutName	PDBOUTName
 	##					     0		     1		     2		    3	 	    4
-	
+
 	set     m       0
 
 	foreach line    $inputs {
