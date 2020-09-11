@@ -34,11 +34,11 @@ proc align {rmolid smolid} {
         }
 
 }
-proc run {ofile resi resf} {
-
-	set initframe 0
-
-	set finaframe [expr [molinfo top get numframes] - 1]
+proc run {ofile resi resf init fina} {
+	#set initframe 0
+	set initframe $init
+	#set finaframe [expr [molinfo top get numframes] - 1]
+	set finaframe $fina
 
 	set first $resi
 

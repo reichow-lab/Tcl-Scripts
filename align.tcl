@@ -30,3 +30,4 @@ proc align {RefMolID SelMolID} {
                 $all move $trans_matrix
 
         }
+}

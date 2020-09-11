@@ -202,16 +202,16 @@ proc	SymLipOP {outname dr dmax zmaxU zminL} {
 	set c		0
 	# isolate shells of lipids that are dr angstroms thick (only affecting the beta-value of the phosphates)
 	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
-		set	shell_upper	[atomselect top "lipids and name P and (z > $zmaxU) and within [expr $dmax - [expr $c * $dr]] of protein"]
-		set	shell_lower	[atomselect top "lipids and name P and (z < $zmaxU) and within [expr $dmax - [expr $c * $dr]] of protein"]
+		set	shell_upper	[atomselect top "lipids and name P and (z > $zmaxU or z < $zminL) and within [expr $dmax - [expr $c * $dr]] of protein"]
+		set	shell_lower	[atomselect top "lipids and name P and (z < $zmaxU and z > $zminL) and within [expr $dmax - [expr $c * $dr]] of protein"]
 		$shell_upper set	beta	$i
 		$shell_lower set	beta	$i
 		incr	c
 	}
 	# Select the lipids for the upper and lower leaflets
 	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
-		set	shell_upper_($i)	[atomselect top "lipids and name P and (z > $zmaxU) and beta = $i"]
-		set	shell_lower_($i)	[atomselect top "lipids and name P and (z < $zmaxU) and beta = $i"]
+		set	shell_upper_($i)	[atomselect top "lipids and name P and (z > $zmaxU or z < $zminL) and beta = $i"]
+		set	shell_lower_($i)	[atomselect top "lipids and name P and (z < $zmaxU and z > $zminL) and beta = $i"]
 		set	upper_resid_($i)	[$shell_upper_($i) get resid]
 		set	upper_segid_($i)	[$shell_upper_($i) get segid]
 		set	lower_resid_($i)	[$shell_lower_($i) get resid]
@@ -269,8 +269,8 @@ proc	RadLipOP {outname dr dmax zmaxU zminL} {
 	# Starting with the outermost shell allows us to assign beta values within each shell due to the way atomselections work...if we start from
 	# shell-1 then we will constantly re-write the beta-values of the shells near the center.
 	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {
-		set	shell_upper($i)	[atomselect top "lipids and name P and (z > $zmaxU) and within [expr $dmax - [expr $c * $dr]] of protein"]
-		set	shell_lower($i) [atomselect top "lipids and name P and (z < $zmaxU) and within [expr $dmax - [expr $c * $dr]] of protein"]
+		set	shell_upper($i)	[atomselect top "lipids and name P and (z > $zmaxU or z < $zminL) and within [expr $dmax - [expr $c * $dr]] of protein"]
+		set	shell_lower($i) [atomselect top "lipids and name P and (z < $zmaxU and z > $zminL) and within [expr $dmax - [expr $c * $dr]] of protein"]
 		incr	c
 	}
 	for {set i $num_shell} {$i >= 1} {set i [expr $i - 1]} {

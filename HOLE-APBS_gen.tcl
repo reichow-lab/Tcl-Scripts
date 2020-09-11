@@ -78,8 +78,6 @@ proc auto_holegen {in} {
 
 	## The input file will contain:		  Ref-PDB	  PSF/DCD	OutFileName	PDBOutName
 	##					     0		     1		     2		    3
-	## The input file will contain:		  Ref-PDB	  PSF/DCD	OutFileName	PDBOutName	PDBOUTName
-	##					     0		     1		     2		    3	 	    4
 
 	set     m       0
 
