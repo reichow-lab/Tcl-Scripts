@@ -101,11 +101,24 @@ proc run {prot mem outname iso {rad 70}} {
   $good writepsf HOLD-solv.psf
   $good writepdb HOLD-solv.pdb
 
-  # Ionize system, first by splitting into Intracellular & Extracellular compartments (as usual)
-  package require autoionize
+# Cut into a Hexagon
   mol delete all
   mol new HOLD-solv.psf
   mol addfile HOLD-solv.pdb
+  set sqrt3 [expr sqrt(3.0)]
+  set bound1text "abs(x) < 0.5*$sqrt3*$rad"
+  set bound2text "x < $sqrt3*(y+$rad) and x > $sqrt3*(y-$rad)"
+  set bound3text "x < $sqrt3*($rad-y) and x > $sqrt3*(-y-$rad)"
+  set all [atomselect top all]
+  set InBounds [atomselect top "same residue as $bound1text and $bound2text and $bound3text"]
+  $InBounds writepdb $outname-lwh.pdb
+  $InBounds writepsf $outname-lwh.psf
+
+  # Ionize system, first by splitting into Intracellular & Extracellular compartments (as usual)
+  package require autoionize
+  mol delete all
+  mol new $outname-lwh.psf
+  mol addfile $outname-lwh.pdb
   set all [atomselect top all]
   set outwat [atomselect top "water and same residue as (abs(z) < 35 and (x^2 + y^2 > 700))"]
   $all set beta 0
@@ -120,20 +133,7 @@ proc run {prot mem outname iso {rad 70}} {
   autoionize -psf inwat.psf -pdb inwat.pdb -o inion -seg ION -sc 0.15 -cation POT -anion CLA -from 5 -between 5
 
   # Merge ionized systems back together
-  merge "oution" "inion" $outname-lwi
-
-  # Cut into a Hexagon
-  mol delete all
-  mol new $outname-lwi.psf
-  mol addfile $outname-lwi.pdb
-  set sqrt3 [expr sqrt(3.0)]
-  set bound1text "abs(x) < 0.5*$sqrt3*$rad"
-  set bound2text "x < $sqrt3*(y+$rad) and x > $sqrt3*(y-$rad)"
-  set bound3text "x < $sqrt3*($rad-y) and x > $sqrt3*(-y-$rad)"
-  set all [atomselect top all]
-  set InBounds [atomselect top "same residue as $bound1text and $bound2text and $bound3text"]
-  $InBounds writepdb $outname-lwih.pdb
-  $InBounds writepsf $outname-lwih.psf
+  merge "oution" "inion" $outname-lwih
 
   # Prepare NAMD input files
   mol delete all
@@ -186,11 +186,11 @@ proc merge {pdb1 pdb2 outname} {
   writepdb $outname.pdb
 }
 proc buildCx {NT ICC ICN CT outname iso} {
-  resetpsf
   if {$iso == "46"} {set disuList [list 54 61 65 189 183 178]
   } elseif {$iso == "50"} {set disuList [list 54 61 65 201 195 190]
   } elseif {$iso == "26"} {set disuList [list 53 60 64 180 174 169]}
   package require psfgen
+  resetpsf
   set i 1
   set j 2
   set chains [list A B C D E F G H I J K L]
@@ -200,8 +200,8 @@ proc buildCx {NT ICC ICN CT outname iso} {
     $sel1 writepdb chain-$chain$i.pdb
     $sel2 writepdb chain-$chain$j.pdb
   }
-  topology /media/bassam/Stuff/WORK/Topology\ and\ Parameters/top_all36_prot.rtf
-  topology /media/bassam/Stuff/WORK/Topology\ and\ Parameters/toppar_water_ions_namd.str
+  topology /home/bassam/Topology\ and\ Parameters/top_all36_prot.rtf
+  topology /home/bassam/Topology\ and\ Parameters/toppar_water_ions_namd.str
 
   pdbalias residue HIS HSD
   set segN [list A1 B1 C1 D1 E1 F1 G1 H1 I1 J1 K1 L1]
