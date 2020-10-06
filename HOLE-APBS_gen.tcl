@@ -10,7 +10,6 @@
 puts "To use this program:\n\t\tholegen <outfile> <PDBOutName> <RefMolID>\n\t\tauto_holegen <InputFile>"
 
 proc holegen {ofile PDB RefMolID} {
-#proc holegen {ofile PDB RefMolID PDBOUT} {}
 
 	# Center reference on channel
 
@@ -33,9 +32,9 @@ proc holegen {ofile PDB RefMolID} {
 
 	for {set i 0} {$i < $numframes} {incr i} {
   	animate goto $i
-    set align_frame [atomselect top "protein and name CA"]
+		set align_frame [atomselect top "protein and name CA"]
 		set all	[atomselect top all]
-    set trans_matrix [measure fit $align_frame $ref_frame]
+    		set trans_matrix [measure fit $align_frame $ref_frame]
 		$all move $trans_matrix
 	}
 
@@ -85,11 +84,10 @@ proc auto_holegen {in} {
 
 		mol new     	[lindex $line 0].pdb
 		mol new         [lindex $line 1].psf
-		mol addfile     [lindex $line 1].dcd waitfor all
+		mol addfile     [lindex $line 1].dcd step 50 waitfor all
 
 		holegen		[lindex $line 2] [lindex $line 3] $m
-		holegen		[lindex $line 2] [lindex $line 3] $m [lindex $line 4]
 
 		set	m	[expr $m + 2]
-		}
+	}
 }
