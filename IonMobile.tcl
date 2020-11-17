@@ -3,7 +3,7 @@
 puts "Load molecule prior to running."
 puts "To run IonMobile.tcl, type: imob <ION> <window size> <outname>"
 
-proc imob {ION WS outname {FF 0}} {
+proc imob {ION WS outname} {
 	# set the system size and subdivide into windows
 	set sys [atomselect top "all"]
 	set zmin [lindex [measure minmax $sys] 0 2]
