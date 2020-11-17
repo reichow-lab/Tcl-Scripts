@@ -8,7 +8,7 @@ proc help {} {
   puts "To run this program type: run <protein-prefix> <membrane-prefix> <outname> <isoform(26/46/50)>"
 }
 help
-proc run {prot mem outname iso {rad 70}} {
+proc run {prot mem outname iso {ION "POT"} {strucwat 0} {rad 70}} {
 
   mol new $prot.pdb
   # Find all terminal residues for patching
@@ -23,7 +23,7 @@ proc run {prot mem outname iso {rad 70}} {
   }
 
   # Create protein psf (acetylated n-termini) and center it in the system.
-  buildCx [lindex $termID 0] [lindex $termID 1] [lindex $termID 2] [lindex $termID 3] HOLD-temp $iso
+  buildCx [lindex $termID 0] [lindex $termID 1] [lindex $termID 2] [lindex $termID 3] HOLD-temp $iso $strucwat
   mol delete all
   mol new HOLD-temp.psf
   mol addfile HOLD-temp.pdb
@@ -94,9 +94,13 @@ proc run {prot mem outname iso {rad 70}} {
   set phospU [atomselect top "lipids and name P and z > 0"]
   set VecU [measure minmax $phospU]
   set all [atomselect top all]
-  set badwat [atomselect top "water and same residue as (((z > [expr [lindex $VecD 0 2] + 5] and z < [expr [lindex $VecD 1 2] - 5]) or (z > [expr [lindex $VecU 0 2] + 5] and z < [expr [lindex $VecU 1 2] - 5])) and (x^2 + y^2 > 700))"]
+  set badwat [atomselect top "water and same residue as (((z > [expr [lindex $VecD 0 2] + 5] and z < [expr [lindex $VecD 1 2] - 5]) or (z > [expr [lindex $VecU 0 2] + 5] and z < [expr [lindex $VecU 1 2] - 5])) and (x^2 + y^2 > 740))"]
   $all set beta 0
   $badwat set beta 1
+  if {$strucwat == 1} {
+    set goodwat [atomselect top "water and segname SW"]
+    $goodwat set beta 0
+    }
   set good [atomselect top "all and beta = 0"]
   $good writepsf HOLD-solv.psf
   $good writepdb HOLD-solv.pdb
@@ -130,7 +134,7 @@ proc run {prot mem outname iso {rad 70}} {
   $inwat writepdb inwat.pdb
   # Now that they are split, ionize accordingly
   autoionize -psf outwat.psf -pdb outwat.pdb -o oution -seg EON -sc 0.15 -cation SOD -anion CLA -from 5 -between 5
-  autoionize -psf inwat.psf -pdb inwat.pdb -o inion -seg ION -sc 0.15 -cation POT -anion CLA -from 5 -between 5
+  autoionize -psf inwat.psf -pdb inwat.pdb -o inion -seg ION -sc 0.15 -cation $ION -anion CLA -from 5 -between 5
 
   # Merge ionized systems back together
   merge "oution" "inion" $outname-lwih
@@ -142,6 +146,10 @@ proc run {prot mem outname iso {rad 70}} {
   set all [atomselect top all]
   set prot [atomselect top protein]
   set back [atomselect top "protein and backbone"]
+  set lip [atomselect top "lipids"]
+  $all set beta 1
+  $lip set beta 0
+  $all writepdb $outname-LIPMELT.pdb
   $all set beta 0
   $prot set beta 1
   $all writepdb $outname-PROTCONST.pdb
@@ -149,11 +157,10 @@ proc run {prot mem outname iso {rad 70}} {
   $back set beta 1
   $all writepdb $outname-BACKCONST.pdb
   set pbc [open "$outname-PBC.txt" w]
-  set minmax [measure minmax [atomselect top water]]
-  set a [expr [lindex $minmax 1 1] - [lindex $minmax 0 1]]
+  set a [expr $rad * 2]
   set b [expr {$a / 2 * sqrt(3.0)}]
   set d [expr {$a / 2}]
-  set c [expr [lindex $minmax 1 2] - [lindex $minmax 0 2]]
+  set c 200
   puts $pbc "#Curtesy of CHARMM-GUI.."
   puts $pbc "#Hexagonal Periodic Boundary conditions."
   puts $pbc "cellBasisVector1       $a  0.0 0.0"
@@ -185,7 +192,7 @@ proc merge {pdb1 pdb2 outname} {
   writepsf $outname.psf
   writepdb $outname.pdb
 }
-proc buildCx {NT ICC ICN CT outname iso} {
+proc buildCx {NT ICC ICN CT outname iso strucwat} {
   if {$iso == "46"} {set disuList [list 54 61 65 189 183 178]
   } elseif {$iso == "50"} {set disuList [list 54 61 65 201 195 190]
   } elseif {$iso == "26"} {set disuList [list 53 60 64 180 174 169]}
@@ -200,6 +207,7 @@ proc buildCx {NT ICC ICN CT outname iso} {
     $sel1 writepdb chain-$chain$i.pdb
     $sel2 writepdb chain-$chain$j.pdb
   }
+  
   topology /home/bassam/Topology\ and\ Parameters/top_all36_prot.rtf
   topology /home/bassam/Topology\ and\ Parameters/toppar_water_ions_namd.str
 
@@ -232,12 +240,32 @@ proc buildCx {NT ICC ICN CT outname iso} {
     writepdb chain-$segc.pdb
     writepsf chain-$segc.psf
   }
+  if {$strucwat == 1} {
+    set wat [atomselect top water]
+    $wat writepdb EMwat.pdb
+    resetpsf
+    pdbalias residue HOH TIP3 
+    segment SW {
+      first NONE
+      last NONE
+      pdb EMwat.pdb
+    }
+    pdbalias atom HOH O OH2
+    coordpdb EMwat.pdb SW
+    guesscoord
+    writepdb strucwat.pdb
+    writepsf strucwat.psf
+  }
   resetpsf
   foreach segn $segN segc $segC {
     readpsf chain-$segn.psf
     coordpdb chain-$segn.pdb
     readpsf chain-$segc.psf
     coordpdb chain-$segc.pdb
+  }
+  if {$strucwat == 1} {
+    readpsf strucwat.psf
+    coordpdb strucwat.pdb
   }
   foreach segn $segN segc $segC {
     patch DISU $segn:[lindex $disuList 0] $segc:[lindex $disuList 3]
