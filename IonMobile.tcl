@@ -6,19 +6,18 @@ puts "To run IonMobile.tcl, type: imob <ION> <window size> <outname>"
 proc imob {ION WS outname} {
 	# set the system size and subdivide into windows
 	set sys [atomselect top "all"]
-	#set zmin [lindex [measure minmax $sys] 0 2]
-	set zmin -100
-	#set z [expr [lindex [measure minmax $sys] 1 2] - [lindex [measure minmax $sys] 0 2]]
-	set z 200
+	set zmin [lindex [measure minmax $sys] 0 2]
+	set z [expr [lindex [measure minmax $sys] 1 2] - [lindex [measure minmax $sys] 0 2]]
 	set WN [expr int($z/$WS)]
 	set out [open $outname.txt w]
 	# loop through windows
 	for {set i 0} {$i <= $WN} {incr i} {
-		puts $out "Bin $i ([expr $zmin + ($WS * $i)] to [expr $zmin + ($WS * ($i + 1))])"
+		puts $out "BinCenter:  [expr ((($zmin + ($WS * $i)) + ($zmin + ($WS * ($i + 1)))) / 2) - [lindex [measure center [atomselect top protein]] 2]]"
 		# loop through frames
 		for {set j 0} {$j < [molinfo top get numframes]} {incr j} {
+			set protz [lindex [measure center [atomselect top protein]] 2]
 			animate goto $j
-			set ionlist [atomselect top "segname ION and name $ION and (z > [expr $zmin + ($WS * $i)] and z < [expr $zmin + ($WS * ($i + 1))])"]
+			set ionlist [atomselect top "segname ION and name $ION and (z > [expr $zmin + ($WS * $i) - $protz] and z < [expr $zmin + ($WS * ($i + 1)) - $protz])"]
 			set indlist [$ionlist get index]
 			foreach ind $indlist {
 				animate goto $j
