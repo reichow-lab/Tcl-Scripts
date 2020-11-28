@@ -6,8 +6,10 @@ puts "To run IonMobile.tcl, type: imob <ION> <window size> <outname>"
 proc imob {ION WS outname} {
 	# set the system size and subdivide into windows
 	set sys [atomselect top "all"]
-	set zmin [lindex [measure minmax $sys] 0 2]
-	set z [expr [lindex [measure minmax $sys] 1 2] - [lindex [measure minmax $sys] 0 2]]
+	#set zmin [lindex [measure minmax $sys] 0 2]
+	set zmin -100
+	#set z [expr [lindex [measure minmax $sys] 1 2] - [lindex [measure minmax $sys] 0 2]]
+	set z 200
 	set WN [expr int($z/$WS)]
 	set out [open $outname.txt w]
 	# loop through windows
