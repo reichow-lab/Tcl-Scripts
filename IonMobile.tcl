@@ -24,13 +24,24 @@ proc imob {ION WS outname} {
 			set indlist [$ionlist get index]
 			foreach ind $indlist {
 				animate goto $j
+				set zcorr [expr [lindex [measure minmax $sys] 1 2] - [lindex [measure minmax $sys] 0 2]]
 				set ion [atomselect top "index $ind"]
-				set pos1 [$ion get {z}]
+				set posZ1 [$ion get {z}]
+				set posX1 [$ion get {x}]
+				set posY1 [$ion get {y}]
 				animate goto [expr $j + 1]
-				set pos2 [$ion get {z}]
-				set dist [expr $pos2 - $pos1]
-				puts $out "$dist"
-				unset ion pos1 pos2 dist
+				set posZ2 [$ion get {z}]
+				set posX2 [$ion get {x}]
+				set posY2 [$ion get {y}]
+				set distZ [expr $posZ2 - $posZ1]
+				if {abs($distZ) >= $zcorr} {
+					if {$distZ >= $zcorr} {set distZ [expr $distZ - $zcorr]
+					} elseif {$distZ <= -$zcorr} {set distZ [expr $distZ + $zcorr]}
+				}
+				set distX [expr $posX2 - $posX1]
+				set distY [expr $posY2 - $posY1]
+				puts $out "$distZ\t$distX\t$distY"
+				unset ion posZ1 posX1 posY1 posZ2 posX2 posY2 distZ distX distY zcorr
 			}
 			unset ionlist indlist
 		}
