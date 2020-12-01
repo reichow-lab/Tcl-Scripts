@@ -20,10 +20,12 @@ proc imob {ION WS outname} {
 		# loop through frames
 		for {set j 0} {$j < [molinfo top get numframes]} {incr j} {
 			animate goto $j
+			# Select ions in the current bin
 			set ionlist [atomselect top "segname ION and name $ION and (z > [expr $zmin + ($WS * $i) - $protz] and z < [expr $zmin + ($WS * ($i + 1) - $protz)])"]
 			set indlist [$ionlist get index]
 			foreach ind $indlist {
 				animate goto $j
+				# in order to correct for the PBC without having to unwrap my simulation
 				set zcorr [expr [lindex [measure minmax $sys] 1 2] - [lindex [measure minmax $sys] 0 2]]
 				set ion [atomselect top "index $ind"]
 				set posZ1 [$ion get {z}]
