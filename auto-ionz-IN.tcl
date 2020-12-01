@@ -3,41 +3,28 @@
 
 
 proc align {rmolid smolid} {
-#        puts -nonewline " Provide molID for reference."
-#        flush stdout
         set ref_molid $rmolid
-#        puts -nonewline " Provide molID for selection."
-#        flush stdout
         set sel_molid $smolid
         set numframes [molinfo $sel_molid get numframes]
+	animate goto 0
+	set prot [atomselect $ref_molid "protein and name CA"]
+	set sys [atomselect $sel_molid all]
+	$sys moveby [vecinvert [measure center $prot]]
         set ref_frame [atomselect $ref_molid "protein and name CA" frame 0]
-        set n 1
-        set sys [atomselect $sel_molid all]
         for {set i 0} {$i < $numframes} {incr i} {
                 animate goto $i
                 set align_frame [atomselect $sel_molid "protein and name CA"]
                 set trans_matrix [measure fit $align_frame $ref_frame]
-                $sys move $trans_matrix
-                if {($n % 100) == 0 } {
-                        puts "alignment $n of $numframes"
-                }
-                incr n
+		$sys move $trans_matrix
         }
-        puts "Alignments complete, ready for RMSD calculations"
 }
 proc run {ofile IonName id} {
-	## Selection of Atom for trajectory output 
-#	puts -nonewline "Select ion by entering its name (potassium = POT, sodium = SOD etc...).  "	
-#	flush stdout
 	set ion_name $IonName
-#	puts -nonewline "What is the MolID? "
-#	flush stdout
 	set molid $id
 #	set ION [atomselect $molid "name $ion_name and not ((abs(z) < 40) and (x^2 + y^2 > 350))"]
 	set ION [atomselect $molid "name $ion_name and not ((abs(z) < 40) and (x^2 + y^2 > 500))"]
 	set ind [$ION get index]
 	set num_ion [$ION num]
-#	puts "There are $num_ion ions"
 	set prot [atomselect $molid protein]
 	set n 0
 	foreach IND $ind {

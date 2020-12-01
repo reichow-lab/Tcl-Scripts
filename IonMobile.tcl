@@ -6,10 +6,10 @@ puts "To run IonMobile.tcl, type: imob <ION> <window size> <outname>"
 
 proc imob {ION WS outname} {
 	set ID [molinfo top get id]
-	align $ID $ID
+	align 0 $ID
 	set protz [lindex [measure center [atomselect top protein]] 2]
 	# set the system size and subdivide into windows
-	set sys [atomselect top "all"]
+	set sys [atomselect 0 "all"]
 	set zmin [lindex [measure minmax $sys] 0 2]
 	set z [expr [lindex [measure minmax $sys] 1 2] - [lindex [measure minmax $sys] 0 2]]
 	set WN [expr int($z/$WS)]
@@ -20,7 +20,7 @@ proc imob {ION WS outname} {
 		# loop through frames
 		for {set j 0} {$j < [molinfo top get numframes]} {incr j} {
 			animate goto $j
-			set ionlist [atomselect top "segname ION and name $ION and (z > [expr $zmin + ($WS * $i) - $protz] and z < [expr $zmin + ($WS * ($i + 1)) - $protz])"]
+			set ionlist [atomselect top "segname ION and name $ION and (z > [expr $zmin + ($WS * $i) - $protz] and z < [expr $zmin + ($WS * ($i + 1) - $protz)])"]
 			set indlist [$ionlist get index]
 			foreach ind $indlist {
 				animate goto $j
