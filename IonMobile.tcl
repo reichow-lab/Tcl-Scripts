@@ -42,7 +42,15 @@ proc imob {ION WS outname} {
 					} elseif {$distZ <= -$zhalf} {set distZ [expr $distZ + $zcorr]}
 				}
 				set distX [expr $posX2 - $posX1]
+				if {abs($distX) >= $zhalf} {
+					if {$distX >= $zhalf} {set distX [expr $distX - $zcorr]
+					} elseif {$distX <= -$zhalf} {set distX [expr $distX + $zcorr]}
+				}
 				set distY [expr $posY2 - $posY1]
+				if {abs($distY) >= $zhalf} {
+					if {$distY >= $zhalf} {set distZ [expr $distY - $zcorr]
+					} elseif {$distY <= -$zhalf} {set distY [expr $distY + $zcorr]}
+				}
 				puts $out "$distZ\t$distX\t$distY"
 				unset ion posZ1 posX1 posY1 posZ2 posX2 posY2 distZ distX distY zcorr
 			}
