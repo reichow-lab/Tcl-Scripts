@@ -28,8 +28,6 @@ proc imob {ION WS outname} {
 			set xcorr [expr [lindex $sysdim 1 0] - [lindex $sysdim 0 0]]
 			set ycorr [expr [lindex $sysdim 1 1] - [lindex $sysdim 0 1]]
 			set zlim [expr $zcorr / 1.3]
-			#debug
-			puts $zcorr\t$zlim
 			set xlim [expr $xcorr / 1.3]
 			set ylim [expr $ycorr / 1.3]
 			# Select ions in the current bin
