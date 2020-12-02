@@ -27,6 +27,7 @@ proc imob {ION WS outname} {
 				animate goto $j
 				# in order to correct for the PBC without having to unwrap my simulation
 				set zcorr [expr [lindex [measure minmax $sys] 1 2] - [lindex [measure minmax $sys] 0 2]]
+				set zhalf [expr $zcorr / 2]
 				set ion [atomselect top "index $ind"]
 				set posZ1 [$ion get {z}]
 				set posX1 [$ion get {x}]
@@ -36,9 +37,9 @@ proc imob {ION WS outname} {
 				set posX2 [$ion get {x}]
 				set posY2 [$ion get {y}]
 				set distZ [expr $posZ2 - $posZ1]
-				if {abs($distZ) >= $zcorr} {
-					if {$distZ >= $zcorr} {set distZ [expr $distZ - $zcorr]
-					} elseif {$distZ <= -$zcorr} {set distZ [expr $distZ + $zcorr]}
+				if {abs($distZ) >= $zhalf} {
+					if {$distZ >= $zhalf} {set distZ [expr $distZ - $zcorr]
+					} elseif {$distZ <= -$zhalf} {set distZ [expr $distZ + $zcorr]}
 				}
 				set distX [expr $posX2 - $posX1]
 				set distY [expr $posY2 - $posY1]
