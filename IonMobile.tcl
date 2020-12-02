@@ -58,7 +58,7 @@ proc imob {ION WS outname} {
 					} elseif {$distY <= -$zlim} {set distY [expr $distY + $ycorr]}
 				}
 				puts $out "$distZ\t$distX\t$distY"
-				unset ion posZ1 posX1 posY1 posZ2 posX2 posY2 distZ distX distY zcorr
+				unset ion posZ1 posX1 posY1 posZ2 posX2 posY2 distZ distX distY 
 			}
 			unset ionlist indlist sysdim zcorr xcorr ycorr zlim xlim ylim
 		}
