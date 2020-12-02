@@ -44,20 +44,20 @@ proc imob {ION WS outname} {
 				set posX2 [$ion get {x}]
 				set posY2 [$ion get {y}]
 				set distZ [expr $posZ2 - $posZ1]
-				if {abs($distZ) >= $zlim} {
-					if {$distZ >= $zlim} {set distZ [expr $distZ - $zcorr]
-					} elseif {$distZ <= -$zlim} {set distZ [expr $distZ + $zcorr]}
-				}
+				#if {abs($distZ) >= $zlim} {
+				#	if {$distZ >= $zlim} {set distZ [expr $distZ - $zcorr]
+				#	} elseif {$distZ <= -$zlim} {set distZ [expr $distZ + $zcorr]}
+				#}
 				set distX [expr $posX2 - $posX1]
-				if {abs($distX) >= $zlim} {
-					if {$distX >= $xlim} {set distX [expr $distX - $xcorr]
-					} elseif {$distX <= -$xlim} {set distX [expr $distX + $xcorr]}
-				}
+				#if {abs($distX) >= $zlim} {
+				#	if {$distX >= $xlim} {set distX [expr $distX - $xcorr]
+				#	} elseif {$distX <= -$xlim} {set distX [expr $distX + $xcorr]}
+				#}
 				set distY [expr $posY2 - $posY1]
-				if {abs($distY) >= $ylim} {
-					if {$distY >= $ylim} {set distY [expr $distY - $ycorr]
-					} elseif {$distY <= -$zlim} {set distY [expr $distY + $ycorr]}
-				}
+				#if {abs($distY) >= $ylim} {
+				#	if {$distY >= $ylim} {set distY [expr $distY - $ycorr]
+				#	} elseif {$distY <= -$zlim} {set distY [expr $distY + $ycorr]}
+				#}
 				puts $out "$distZ\t$distX\t$distY"
 				unset posZ1 posX1 posY1 posZ2 posX2 posY2 distZ distX distY
 				$ion delete
