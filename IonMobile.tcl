@@ -27,7 +27,7 @@ proc imob {ION WS outname} {
 				animate goto $j
 				# in order to correct for the PBC without having to unwrap my simulation
 				set zcorr [expr [lindex [measure minmax $sys] 1 2] - [lindex [measure minmax $sys] 0 2]]
-				set zhalf [expr $zcorr / 2]
+				set zlim [expr $zcorr / 1.3]
 				set ion [atomselect top "index $ind"]
 				set posZ1 [$ion get {z}]
 				set posX1 [$ion get {x}]
@@ -37,19 +37,19 @@ proc imob {ION WS outname} {
 				set posX2 [$ion get {x}]
 				set posY2 [$ion get {y}]
 				set distZ [expr $posZ2 - $posZ1]
-				if {abs($distZ) >= $zhalf} {
-					if {$distZ >= $zhalf} {set distZ [expr $distZ - $zcorr]
-					} elseif {$distZ <= -$zhalf} {set distZ [expr $distZ + $zcorr]}
+				if {abs($distZ) >= $zlim} {
+					if {$distZ >= $zlim} {set distZ [expr $distZ - $zcorr]
+					} elseif {$distZ <= -$zlim} {set distZ [expr $distZ + $zcorr]}
 				}
 				set distX [expr $posX2 - $posX1]
-				if {abs($distX) >= $zhalf} {
-					if {$distX >= $zhalf} {set distX [expr $distX - $zcorr]
-					} elseif {$distX <= -$zhalf} {set distX [expr $distX + $zcorr]}
+				if {abs($distX) >= $zlim} {
+					if {$distX >= $zlim} {set distX [expr $distX - $zcorr]
+					} elseif {$distX <= -$zlim} {set distX [expr $distX + $zcorr]}
 				}
 				set distY [expr $posY2 - $posY1]
-				if {abs($distY) >= $zhalf} {
-					if {$distY >= $zhalf} {set distZ [expr $distY - $zcorr]
-					} elseif {$distY <= -$zhalf} {set distY [expr $distY + $zcorr]}
+				if {abs($distY) >= $zlim} {
+					if {$distY >= $zlim} {set distZ [expr $distY - $zcorr]
+					} elseif {$distY <= -$zlim} {set distY [expr $distY + $zcorr]}
 				}
 				puts $out "$distZ\t$distX\t$distY"
 				unset ion posZ1 posX1 posY1 posZ2 posX2 posY2 distZ distX distY zcorr
