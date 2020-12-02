@@ -27,9 +27,9 @@ proc imob {ION WS outname} {
 			set zcorr [expr [lindex $sysdim 1 2] - [lindex $sysdim 0 2] - 8]
 			set xcorr [expr [lindex $sysdim 1 0] - [lindex $sysdim 0 0]]
 			set ycorr [expr [lindex $sysdim 1 1] - [lindex $sysdim 0 1]]
-			set zlim [expr $zcorr / 1.3]
-			set xlim [expr $xcorr / 1.3]
-			set ylim [expr $ycorr / 1.3]
+			set zlim [expr $zcorr / 1.4]
+			set xlim [expr $xcorr / 1.4]
+			set ylim [expr $ycorr / 1.4]
 			# Select ions in the current bin
 			set ionlist [atomselect top "segname ION and name $ION and (z > [expr $zmin + ($WS * $i) - $protz] and z < [expr $zmin + ($WS * ($i + 1) - $protz)])"]
 			set indlist [$ionlist get index]
