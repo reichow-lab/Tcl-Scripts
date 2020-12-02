@@ -19,7 +19,8 @@ proc imob {ION WS outname} {
 	for {set i 0} {$i <= $WN} {incr i} {
 		puts $out "BinCenter:\t[expr ((($zmin + ($WS * $i)) + ($zmin + ($WS * ($i + 1)))) / 2) - $protz]"
 		# loop through frames
-		for {set j 0} {$j < [molinfo top get numframes]} {incr j} {
+		set numF [molinfo top get numframes]
+		for {set j 0} {$j < $numF} {incr j} {
 			animate goto $j
 			# in order to correct for the PBC without having to unwrap my simulation
 			set sysdim [measure minmax $sys]
@@ -58,9 +59,11 @@ proc imob {ION WS outname} {
 					} elseif {$distY <= -$zlim} {set distY [expr $distY + $ycorr]}
 				}
 				puts $out "$distZ\t$distX\t$distY"
-				unset ion posZ1 posX1 posY1 posZ2 posX2 posY2 distZ distX distY 
+				unset posZ1 posX1 posY1 posZ2 posX2 posY2 distZ distX distY
+				$ion delete
 			}
-			unset ionlist indlist sysdim zcorr xcorr ycorr zlim xlim ylim
+			unset indlist sysdim zcorr xcorr ycorr zlim xlim ylim
+			$ionlist delete
 		}
 	}
 	close $out
