@@ -8,7 +8,7 @@
 #	frame of the trajectory applying the the transformation (alignment) to each frame.	
 #												
 set chainsel [atomselect top "protein and resid 9 and name CA"]
-set chainlist [$chainsel get chains]
+set chainlist [$chainsel get chain]
 proc run {atoms} {
 	set ref_mol	[atomselect top "protein and chain A and $atoms" frame 0]
 	set numF	[molinfo top get numframes]
