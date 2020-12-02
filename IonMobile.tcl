@@ -9,9 +9,10 @@ proc imob {ION WS outname} {
 	align 0 $ID
 	set protz [lindex [measure center [atomselect top protein]] 2]
 	# set the system size and subdivide into windows
-	set sys [atomselect 0 "all"]
-	set zmin [lindex [measure minmax $sys] 0 2]
-	set z [expr [lindex [measure minmax $sys] 1 2] - [lindex [measure minmax $sys] 0 2]]
+	set ref [atomselect 0 "all"]
+	set sys [atomselect top "all"]
+	set zmin [lindex [measure minmax $ref] 0 2]
+	set z [expr [lindex [measure minmax $ref] 1 2] - $zmin]
 	set WN [expr int($z/$WS)]
 	set out [open $outname.txt w]
 	# loop through windows
@@ -20,14 +21,19 @@ proc imob {ION WS outname} {
 		# loop through frames
 		for {set j 0} {$j < [molinfo top get numframes]} {incr j} {
 			animate goto $j
+			# in order to correct for the PBC without having to unwrap my simulation
+			set sysdim [measure minmax $sys]
+			set zcorr [expr [lindex $sysdim 1 2] - [lindex $sysdim 0 2]]
+			set xcorr [expr [lindex $sysdim 1 0] - [lindex $sysdim 0 0]]
+			set ycorr [expr [lindex $sysdim 1 1] - [lindex $sysdim 0 1]]
+			set zlim [expr $zcorr / 1.3]
+			set xlim [expr $xcorr / 1.3]
+			set ylim [expr $ycorr / 1.3]
 			# Select ions in the current bin
 			set ionlist [atomselect top "segname ION and name $ION and (z > [expr $zmin + ($WS * $i) - $protz] and z < [expr $zmin + ($WS * ($i + 1) - $protz)])"]
 			set indlist [$ionlist get index]
 			foreach ind $indlist {
 				animate goto $j
-				# in order to correct for the PBC without having to unwrap my simulation
-				set zcorr [expr [lindex [measure minmax $sys] 1 2] - [lindex [measure minmax $sys] 0 2]]
-				set zlim [expr $zcorr / 1.3]
 				set ion [atomselect top "index $ind"]
 				set posZ1 [$ion get {z}]
 				set posX1 [$ion get {x}]
@@ -43,18 +49,18 @@ proc imob {ION WS outname} {
 				}
 				set distX [expr $posX2 - $posX1]
 				if {abs($distX) >= $zlim} {
-					if {$distX >= $zlim} {set distX [expr $distX - $zcorr]
-					} elseif {$distX <= -$zlim} {set distX [expr $distX + $zcorr]}
+					if {$distX >= $xlim} {set distX [expr $distX - $xcorr]
+					} elseif {$distX <= -$xlim} {set distX [expr $distX + $xcorr]}
 				}
 				set distY [expr $posY2 - $posY1]
-				if {abs($distY) >= $zlim} {
-					if {$distY >= $zlim} {set distZ [expr $distY - $zcorr]
-					} elseif {$distY <= -$zlim} {set distY [expr $distY + $zcorr]}
+				if {abs($distY) >= $ylim} {
+					if {$distY >= $ylim} {set distY [expr $distY - $ycorr]
+					} elseif {$distY <= -$zlim} {set distY [expr $distY + $ycorr]}
 				}
 				puts $out "$distZ\t$distX\t$distY"
 				unset ion posZ1 posX1 posY1 posZ2 posX2 posY2 distZ distX distY zcorr
 			}
-			unset ionlist indlist
+			unset ionlist indlist sysdim zcorr xcorr ycorr zlim xlim ylim
 		}
 	}
 	close $out
