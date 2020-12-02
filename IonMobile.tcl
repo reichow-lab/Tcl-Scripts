@@ -24,7 +24,7 @@ proc imob {ION WS outname} {
 			animate goto $j
 			# in order to correct for the PBC without having to unwrap my simulation
 			set sysdim [measure minmax $sys]
-			set zcorr [expr [lindex $sysdim 1 2] - [lindex $sysdim 0 2]]
+			set zcorr [expr [lindex $sysdim 1 2] - [lindex $sysdim 0 2] - 8]
 			set xcorr [expr [lindex $sysdim 1 0] - [lindex $sysdim 0 0]]
 			set ycorr [expr [lindex $sysdim 1 1] - [lindex $sysdim 0 1]]
 			set zlim [expr $zcorr / 1.3]
