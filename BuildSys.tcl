@@ -5,11 +5,12 @@
 #
 # In the meantime, you must hard-code in the resID of the cysteins participating in disulfide bonds
 proc help {} {
-  puts "To run this program type: run <protein-prefix> <membrane-prefix> <outname> <isoform(26/46/50)>"
+  puts "To run this program type: build <protein-prefix> <membrane-prefix> -o <outname> -iso <(26/46/50)> -ion <ion name> -wat <\[0\]/1> -rad <minimum radius>"
 }
 help
-proc run {prot mem outname iso {ION "POT"} {strucwat 0} {rad 70}} {
-
+proc build {prot mem args}  {
+  # Set named arguments
+  array set opt [concat {-o "TEST" -iso "46" -ion "POT" -wat 0 -rad 70} $args]
   mol new $prot.pdb
   # Find all terminal residues for patching
   set termID ""
@@ -23,7 +24,7 @@ proc run {prot mem outname iso {ION "POT"} {strucwat 0} {rad 70}} {
   }
 
   # Create protein psf (acetylated n-termini) and center it in the system.
-  buildCx [lindex $termID 0] [lindex $termID 1] [lindex $termID 2] [lindex $termID 3] HOLD-temp $iso $strucwat
+  buildCx [lindex $termID 0] [lindex $termID 1] [lindex $termID 2] [lindex $termID 3] HOLD-temp $opt(-iso) $opt(-wat)
   mol delete all
   mol new HOLD-temp.psf
   mol addfile HOLD-temp.pdb
@@ -97,7 +98,7 @@ proc run {prot mem outname iso {ION "POT"} {strucwat 0} {rad 70}} {
   set badwat [atomselect top "water and same residue as (((z > [expr [lindex $VecD 0 2] + 5] and z < [expr [lindex $VecD 1 2] - 5]) or (z > [expr [lindex $VecU 0 2] + 5] and z < [expr [lindex $VecU 1 2] - 5])) and (x^2 + y^2 > 740))"]
   $all set beta 0
   $badwat set beta 1
-  if {$strucwat == 1} {
+  if {$opt(-wat) == 1} {
     set goodwat [atomselect top "water and segname SW"]
     $goodwat set beta 0
     }
@@ -110,19 +111,19 @@ proc run {prot mem outname iso {ION "POT"} {strucwat 0} {rad 70}} {
   mol new HOLD-solv.psf
   mol addfile HOLD-solv.pdb
   set sqrt3 [expr sqrt(3.0)]
-  set bound1text "abs(x) < 0.5*$sqrt3*$rad"
-  set bound2text "x < $sqrt3*(y+$rad) and x > $sqrt3*(y-$rad)"
-  set bound3text "x < $sqrt3*($rad-y) and x > $sqrt3*(-y-$rad)"
+  set bound1text "abs(x) < 0.5*$sqrt3*$opt(-rad)"
+  set bound2text "x < $sqrt3*(y+$opt(-rad)) and x > $sqrt3*(y-$opt(-rad))"
+  set bound3text "x < $sqrt3*($opt(-rad)-y) and x > $sqrt3*(-y-$opt(-rad))"
   set all [atomselect top all]
   set InBounds [atomselect top "same residue as $bound1text and $bound2text and $bound3text"]
-  $InBounds writepdb $outname-lwh.pdb
-  $InBounds writepsf $outname-lwh.psf
+  $InBounds writepdb $opt(-o)-lwh.pdb
+  $InBounds writepsf $opt(-o)-lwh.psf
 
   # Ionize system, first by splitting into Intracellular & Extracellular compartments (as usual)
   package require autoionize
   mol delete all
-  mol new $outname-lwh.psf
-  mol addfile $outname-lwh.pdb
+  mol new $opt(-o)-lwh.psf
+  mol addfile $opt(-o)-lwh.pdb
   set all [atomselect top all]
   set outwat [atomselect top "water and same residue as (abs(z) < 35 and (x^2 + y^2 > 700))"]
   $all set beta 0
@@ -134,30 +135,30 @@ proc run {prot mem outname iso {ION "POT"} {strucwat 0} {rad 70}} {
   $inwat writepdb inwat.pdb
   # Now that they are split, ionize accordingly
   autoionize -psf outwat.psf -pdb outwat.pdb -o oution -seg EON -sc 0.15 -cation SOD -anion CLA -from 5 -between 5
-  autoionize -psf inwat.psf -pdb inwat.pdb -o inion -seg ION -sc 0.15 -cation $ION -anion CLA -from 5 -between 5
+  autoionize -psf inwat.psf -pdb inwat.pdb -o inion -seg ION -sc 0.15 -cation $opt(-ion) -anion CLA -from 5 -between 5
 
   # Merge ionized systems back together
-  merge "oution" "inion" $outname-lwih
+  merge "oution" "inion" $opt(-o)-lwih
 
   # Prepare NAMD input files
   mol delete all
-  mol new $outname-lwih.psf
-  mol addfile $outname-lwih.pdb
+  mol new $opt(-o)-lwih.psf
+  mol addfile $opt(-o)-lwih.pdb
   set all [atomselect top all]
   set prot [atomselect top protein]
   set back [atomselect top "protein and backbone"]
   set lip [atomselect top "lipids"]
   $all set beta 1
   $lip set beta 0
-  $all writepdb $outname-LIPMELT.pdb
+  $all writepdb $opt(-o)-LIPMELT.pdb
   $all set beta 0
   $prot set beta 1
-  $all writepdb $outname-PROTCONST.pdb
+  $all writepdb $opt(-o)-PROTCONST.pdb
   $all set beta 0
   $back set beta 1
-  $all writepdb $outname-BACKCONST.pdb
-  set pbc [open "$outname-PBC.txt" w]
-  set a [expr $rad * 2]
+  $all writepdb $opt(-o)-BACKCONST.pdb
+  set pbc [open "$opt(-o)-PBC.txt" w]
+  set a [expr $opt(-rad) * 2]
   set b [expr {$a / 2 * sqrt(3.0)}]
   set d [expr {$a / 2}]
   set c 200
@@ -189,13 +190,13 @@ proc merge {pdb1 pdb2 outname} {
   coordpdb $pdb1.pdb
   readpsf $pdb2.psf
   coordpdb $pdb2.pdb
-  writepsf $outname.psf
-  writepdb $outname.pdb
+  writepsf $opt(-o).psf
+  writepdb $opt(-o).pdb
 }
 proc buildCx {NT ICC ICN CT outname iso strucwat} {
-  if {$iso == "46"} {set disuList [list 54 61 65 189 183 178]
-  } elseif {$iso == "50"} {set disuList [list 54 61 65 201 195 190]
-  } elseif {$iso == "26"} {set disuList [list 53 60 64 180 174 169]}
+  if {$opt(-iso) == "46"} {set disuList [list 54 61 65 189 183 178]
+  } elseif {$opt(-iso) == "50"} {set disuList [list 54 61 65 201 195 190]
+  } elseif {$opt(-iso) == "26"} {set disuList [list 53 60 64 180 174 169]}
   package require psfgen
   resetpsf
   set i 1
@@ -207,7 +208,7 @@ proc buildCx {NT ICC ICN CT outname iso strucwat} {
     $sel1 writepdb chain-$chain$i.pdb
     $sel2 writepdb chain-$chain$j.pdb
   }
-  
+
   topology /home/bassam/Topology\ and\ Parameters/top_all36_prot.rtf
   topology /home/bassam/Topology\ and\ Parameters/toppar_water_ions_namd.str
 
@@ -240,11 +241,11 @@ proc buildCx {NT ICC ICN CT outname iso strucwat} {
     writepdb chain-$segc.pdb
     writepsf chain-$segc.psf
   }
-  if {$strucwat == 1} {
+  if {$opt(-wat) == 1} {
     set wat [atomselect top water]
     $wat writepdb EMwat.pdb
     resetpsf
-    pdbalias residue HOH TIP3 
+    pdbalias residue HOH TIP3
     segment SW {
       first NONE
       last NONE
@@ -263,7 +264,7 @@ proc buildCx {NT ICC ICN CT outname iso strucwat} {
     readpsf chain-$segc.psf
     coordpdb chain-$segc.pdb
   }
-  if {$strucwat == 1} {
+  if {$opt(-wat) == 1} {
     readpsf strucwat.psf
     coordpdb strucwat.pdb
   }
@@ -272,6 +273,6 @@ proc buildCx {NT ICC ICN CT outname iso strucwat} {
     patch DISU $segn:[lindex $disuList 1] $segc:[lindex $disuList 4]
     patch DISU $segn:[lindex $disuList 2] $segc:[lindex $disuList 5]
   }
-  writepsf $outname.psf
-  writepdb $outname.pdb
+  writepsf $opt(-o).psf
+  writepdb $opt(-o).pdb
 }
