@@ -63,9 +63,10 @@ proc imob {ION WS outname} {
 				unset posZ1 posX1 posY1 posZ2 posX2 posY2 distZ distX distY
 				$ion delete
 			}
-			unset indlist zcorr sDcorr lDcorr zlim sDlim lDlim
+			unset indlist 
 			$ionlist delete
 		}
 	}
+	unset zcorr sDcorr lDcorr zlim sDlim lDlim
 	close $out
 }
