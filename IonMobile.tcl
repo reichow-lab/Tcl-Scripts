@@ -7,6 +7,8 @@ puts "To run IonMobile.tcl, type: imob <ION> <window size> <outname>"
 proc imob {ION WS outname} {
 	set ID [molinfo top get id]
 	animate goto 0
+	set all [atomselect top all]
+	set sysdim [measure minmax $all]
 	set zcorr [expr [lindex $sysdim 1 2] - [lindex $sysdim 0 2]]
 	set sDcorr [expr [lindex $sysdim 1 0] - [lindex $sysdim 0 0]]
 	set lDcorr [expr [lindex $sysdim 1 1] - [lindex $sysdim 0 1]]
@@ -61,7 +63,7 @@ proc imob {ION WS outname} {
 				unset posZ1 posX1 posY1 posZ2 posX2 posY2 distZ distX distY
 				$ion delete
 			}
-			unset indlist sysdim zcorr sDcorr lDcorr zlim sDlim lDlim
+			unset indlist zcorr sDcorr lDcorr zlim sDlim lDlim
 			$ionlist delete
 		}
 	}
