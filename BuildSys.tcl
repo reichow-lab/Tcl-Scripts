@@ -276,7 +276,7 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
     writepdb chain-$segc.pdb
     writepsf chain-$segc.psf
   }
-  if {$opt(-wat) == 1} {
+  if {$strucwat == 1} {
     set wat [atomselect top water]
     $wat writepdb EMwat.pdb
     resetpsf
@@ -299,7 +299,7 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
     readpsf chain-$segc.psf
     coordpdb chain-$segc.pdb
   }
-  if {$opt(-wat) == 1} {
+  if {$strucwat == 1} {
     readpsf strucwat.psf
     coordpdb strucwat.pdb
   }
