@@ -200,9 +200,6 @@ proc merge {pdb1 pdb2 outname} {
 }
 proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
   if {$mut == 1} {
-    set mres [list ""]
-    set mcod [list ""]
-    set mseg [list ""]
     puts "How many mutations would you like to make? "
     flush stdout
     set mutnum [gets stdin]
