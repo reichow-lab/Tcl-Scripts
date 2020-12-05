@@ -242,6 +242,13 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
     segment $segn {
       first ACE
       last NONE
+      if {[llen $mutnum] > 0} {
+        foreach seg $mseg res $mres code $mcod {
+          if {$seg == 'n'} {
+          mutate $res $code
+          }
+        }
+      }
       pdb chain-$segn.pdb
       #if {[llen $mutnum] > 0} {
       #  foreach seg $mseg res $mres code $mcod {
