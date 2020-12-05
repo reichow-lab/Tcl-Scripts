@@ -245,7 +245,7 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
       last NONE
       if {$mut == 1} {
         foreach seg $mseg res $mres code $mcod {
-          if {$seg == 'n'} {
+          if {$seg == "n"} {
           mutate $res $code
           }
         }
