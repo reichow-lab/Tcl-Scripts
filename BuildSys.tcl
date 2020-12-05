@@ -249,6 +249,7 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
       if {[llen $mutnum] > 0} {
         foreach seg $mseg res $mres code $mcod {
           if {$seg == 'n'} {
+            puts "DEBUG"
             mutate $res $code
           }
         }
