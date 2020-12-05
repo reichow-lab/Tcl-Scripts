@@ -10,7 +10,7 @@ proc help {} {
 help
 proc build {prot mem args}  {
   # Set named arguments
-  array set opt [concat {-o "TEST" -iso "46" -ion "POT" -wat 0 -rad 70 -hex 1} $args]
+  array set opt [concat {-o "TEST" -iso "46" -ion "POT" -wat 0 -rad 70 -hex 1 -mut 0} $args]
   mol new $prot.pdb
   # Find all terminal residues for patching
   set termID ""
@@ -244,11 +244,11 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
       last NONE
       pdb chain-$segn.pdb
       if {[llen $mutnum] > 0} {
-        #foreach seg $mseg res $mres code $mcod {
-        if {$seg == 'n'} {
+        foreach seg $mseg res $mres code $mcod {
+          if {$seg == 'n'} {
           mutate $res $code
+          }
         }
-        #}
       }
     }
     coordpdb chain-$segn.pdb $segn
