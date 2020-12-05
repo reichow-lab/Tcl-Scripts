@@ -195,8 +195,8 @@ proc merge {pdb1 pdb2 outname} {
   coordpdb $pdb1.pdb
   readpsf $pdb2.psf
   coordpdb $pdb2.pdb
-  writepsf $opt(-o).psf
-  writepdb $opt(-o).pdb
+  writepsf $outname.psf
+  writepdb $outname.pdb
 }
 proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
   if {$mut == 1} {
