@@ -214,7 +214,8 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
       flush stdout
       lappend mcod [gets stdin]
     }
-  }
+  } else {set mutnum 0}
+
   if {$iso == "46"} {set disuList [list 54 61 65 189 183 178]
   } elseif {$iso == "50"} {set disuList [list 54 61 65 201 195 190]
   } elseif {$iso == "26"} {set disuList [list 53 60 64 180 174 169]}
