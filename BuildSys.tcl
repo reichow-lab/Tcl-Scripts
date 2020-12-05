@@ -5,12 +5,12 @@
 #
 # In the meantime, you must hard-code in the resID of the cysteins participating in disulfide bonds
 proc help {} {
-  puts "To run this program type: build <protein-prefix> <membrane-prefix> -o <outname> -iso <(26/46/50)> -ion <ion name> -wat <\[0\]/1> -rad <minimum radius>"
+  puts "To run this program type: build <protein-prefix> <membrane-prefix> -o <outname> -iso <26/\[46\]/50> -ion <ion name> -wat <\[0\]/1> -rad <minimum radius> -hex <0/\[1\]> -mut <\[0\]/1>"
 }
 help
 proc build {prot mem args}  {
   # Set named arguments
-  array set opt [concat {-o "TEST" -iso "46" -ion "POT" -wat 0 -rad 70} $args]
+  array set opt [concat {-o "TEST" -iso "46" -ion "POT" -wat 0 -rad 70 -hex 1} $args]
   mol new $prot.pdb
   # Find all terminal residues for patching
   set termID ""
@@ -24,7 +24,7 @@ proc build {prot mem args}  {
   }
 
   # Create protein psf (acetylated n-termini) and center it in the system.
-  buildCx [lindex $termID 0] [lindex $termID 1] [lindex $termID 2] [lindex $termID 3] HOLD-temp $opt(-iso) $opt(-wat)
+  buildCx [lindex $termID 0] [lindex $termID 1] [lindex $termID 2] [lindex $termID 3] HOLD-temp $opt(-iso) $opt(-wat) $opt(-mut)
   mol delete all
   mol new HOLD-temp.psf
   mol addfile HOLD-temp.pdb
@@ -107,17 +107,22 @@ proc build {prot mem args}  {
   $good writepdb HOLD-solv.pdb
 
 # Cut into a Hexagon
-  mol delete all
-  mol new HOLD-solv.psf
-  mol addfile HOLD-solv.pdb
-  set sqrt3 [expr sqrt(3.0)]
-  set bound1text "abs(x) < 0.5*$sqrt3*$opt(-rad)"
-  set bound2text "x < $sqrt3*(y+$opt(-rad)) and x > $sqrt3*(y-$opt(-rad))"
-  set bound3text "x < $sqrt3*($opt(-rad)-y) and x > $sqrt3*(-y-$opt(-rad))"
-  set all [atomselect top all]
-  set InBounds [atomselect top "same residue as $bound1text and $bound2text and $bound3text"]
-  $InBounds writepdb $opt(-o)-lwh.pdb
-  $InBounds writepsf $opt(-o)-lwh.psf
+  if {$opt(-hex) == 1} {
+    mol delete all
+    mol new HOLD-solv.psf
+    mol addfile HOLD-solv.pdb
+    set sqrt3 [expr sqrt(3.0)]
+    set bound1text "abs(x) < 0.5*$sqrt3*$opt(-rad)"
+    set bound2text "x < $sqrt3*(y+$opt(-rad)) and x > $sqrt3*(y-$opt(-rad))"
+    set bound3text "x < $sqrt3*($opt(-rad)-y) and x > $sqrt3*(-y-$opt(-rad))"
+    set all [atomselect top all]
+    set InBounds [atomselect top "same residue as $bound1text and $bound2text and $bound3text"]
+    $InBounds writepdb $opt(-o)-lwh.pdb
+    $InBounds writepsf $opt(-o)-lwh.psf
+  } elseif {$opt(-hex) == 0} {
+    $good writepsf $opt(-o)-lwh.psf
+    $good writepdb $opt(-o)-lwh.pdb
+  }
 
   # Ionize system, first by splitting into Intracellular & Extracellular compartments (as usual)
   package require autoionize
@@ -193,7 +198,26 @@ proc merge {pdb1 pdb2 outname} {
   writepsf $opt(-o).psf
   writepdb $opt(-o).pdb
 }
-proc buildCx {NT ICC ICN CT outname iso strucwat} {
+proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
+  if {$mut == 1} {
+    set mres [list ""]
+    set mcod [list ""]
+    set mseg [list ""]
+    puts "How many mutations would you like to make? "
+    flush stdout
+    set mutnum [gets stdin]
+    for {set m 0} {$m < $mutnum} {incr m} {
+      puts "RESID? "
+      flush stdout
+      lappend mres [gets stdin]
+      puts "segn or segc (type 'n' or 'c')"
+      flush stdout
+      lappend mseg [gets stdin]
+      puts "New AA? "
+      flush stdout
+      lappend mcod [gets stdin]
+    }
+  }
   if {$opt(-iso) == "46"} {set disuList [list 54 61 65 189 183 178]
   } elseif {$opt(-iso) == "50"} {set disuList [list 54 61 65 201 195 190]
   } elseif {$opt(-iso) == "26"} {set disuList [list 53 60 64 180 174 169]}
@@ -222,6 +246,13 @@ proc buildCx {NT ICC ICN CT outname iso strucwat} {
       first ACE
       last NONE
       pdb chain-$segn.pdb
+      if {[llen $mutnum] > 0} {
+        foreach seg $mseg res $mres code $mcod {
+          if {$seg == 'n'} {
+            mutate $res $code
+          }
+        }
+      }
     }
     coordpdb chain-$segn.pdb $segn
     guesscoord
@@ -235,6 +266,13 @@ proc buildCx {NT ICC ICN CT outname iso strucwat} {
       first NONE
       last CTER
       pdb chain-$segc.pdb
+      if {[llen $mutnum] > 0} {
+        foreach seg $mseg res $mres code $mcod {
+          if {$seg == 'c'} {
+            mutate $res $code
+          }
+        }
+      }
     }
     coordpdb chain-$segc.pdb $segc
     guesscoord
