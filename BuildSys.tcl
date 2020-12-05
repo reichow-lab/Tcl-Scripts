@@ -243,13 +243,13 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
       first ACE
       last NONE
       pdb chain-$segn.pdb
-      if {[llen $mutnum] > 0} {
-        foreach seg $mseg res $mres code $mcod {
-          if {$seg == 'n'} {
-          mutate $res $code
-          }
-        }
-      }
+      #if {[llen $mutnum] > 0} {
+      #  foreach seg $mseg res $mres code $mcod {
+      #    if {$seg == 'n'} {
+      #    mutate $res $code
+      #    }
+      #  }
+      #}
     }
     coordpdb chain-$segn.pdb $segn
     guesscoord
