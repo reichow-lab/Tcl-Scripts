@@ -247,12 +247,11 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
       last NONE
       pdb chain-$segn.pdb
       if {[llen $mutnum] > 0} {
-        foreach seg $mseg res $mres code $mcod {
-          if {$seg == 'n'} {
-            puts "DEBUG"
-            mutate $res $code
-          }
+        #foreach seg $mseg res $mres code $mcod {
+        if {$seg == 'n'} {
+          mutate $res $code
         }
+        #}
       }
     }
     coordpdb chain-$segn.pdb $segn
