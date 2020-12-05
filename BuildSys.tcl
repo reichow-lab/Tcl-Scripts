@@ -308,6 +308,6 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
     patch DISU $segn:[lindex $disuList 1] $segc:[lindex $disuList 4]
     patch DISU $segn:[lindex $disuList 2] $segc:[lindex $disuList 5]
   }
-  writepsf $opt(-o).psf
-  writepdb $opt(-o).pdb
+  writepsf $outname.psf
+  writepdb $outname.pdb
 }
