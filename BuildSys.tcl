@@ -214,7 +214,7 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
       flush stdout
       lappend mcod [gets stdin]
     }
-  } else {set mutnum 0}
+  }
 
   if {$iso == "46"} {set disuList [list 54 61 65 189 183 178]
   } elseif {$iso == "50"} {set disuList [list 54 61 65 201 195 190]
@@ -243,7 +243,7 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
     segment $segn {
       first ACE
       last NONE
-      if {[llen $mutnum] > 0} {
+      if {$mut == 1} {
         foreach seg $mseg res $mres code $mcod {
           if {$seg == 'n'} {
           mutate $res $code
