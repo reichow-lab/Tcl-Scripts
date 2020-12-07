@@ -80,6 +80,8 @@ proc build {prot mem args}  {
   set phosP [atomselect top "lipids and name P"]
   set vec [measure minmax $phosP]
   set halfz [expr $opt(-z) / 2.0]
+  set neglist [list 0 0 -$halfz]
+  set poslist [list 0 0 $halfz]
   set negZ [vecinvert [list 0 0 [lindex $vec 0 2]]]
   set watvec1 [vecadd [lindex $vec 0] $negZ {0 0 -$halfz}]
   set posZ [vecinvert [list 0 0 [lindex $vec 1 2]]]
