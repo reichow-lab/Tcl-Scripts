@@ -122,8 +122,13 @@ proc build {prot mem args}  {
     $InBounds writepdb $opt(-o)-lwh.pdb
     $InBounds writepsf $opt(-o)-lwh.psf
   } elseif {$opt(-hex) == 0} {
-    $good writepsf $opt(-o)-lwh.psf
-    $good writepdb $opt(-o)-lwh.pdb
+    mol delete all
+    mol new HOLD-solv.psf
+    mol addfile HOLD-solv.pdb
+    set all [atomselect top all]
+    set InBounds [atomselect top "same residue as abs(x) < $rad and abs(y) < $rad"]
+    $InBounds writepsf $opt(-o)-lwh.psf
+    $InBounds writepdb $opt(-o)-lwh.pdb
   }
 
   # Ionize system, first by splitting into Intracellular & Extracellular compartments (as usual)
