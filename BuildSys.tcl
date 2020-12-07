@@ -10,7 +10,7 @@ proc help {} {
 help
 proc build {prot mem args}  {
   # Set named arguments
-  array set opt [concat {-o "TEST" -iso "46" -ion "POT" -wat 0 -rad 70 -hex 1 -mut 0 -z 200} $args]
+  array set opt [concat {-o "TEST" -iso "46" -ion "POT" -wat 0 -rad 70 -hex 1 -mut 0 -z 200 -hmr 1} $args]
   mol new $prot.pdb
   # Find all terminal residues for patching
   set termID ""
