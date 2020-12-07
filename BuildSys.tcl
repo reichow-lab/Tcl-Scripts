@@ -83,9 +83,9 @@ proc build {prot mem args}  {
   set neglist [list 0 0 -$halfz]
   set poslist [list 0 0 $halfz]
   set negZ [vecinvert [list 0 0 [lindex $vec 0 2]]]
-  set watvec1 [vecadd [lindex $vec 0] $negZ {0 0 -$halfz}]
+  set watvec1 [vecadd [lindex $vec 0] $negZ $neglist]
   set posZ [vecinvert [list 0 0 [lindex $vec 1 2]]]
-  set watvec2 [vecadd [lindex $vec 1] $posZ {0 0 $halfz}]
+  set watvec2 [vecadd [lindex $vec 1] $posZ $poslist]
   solvate HOLD-lipids.psf HOLD-lipids.pdb -o HOLD-RAW -b 1.5 -minmax [list $watvec1 $watvec2]
 
   # Delete waters that are overlapping in the lipid region
