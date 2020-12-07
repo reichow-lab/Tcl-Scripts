@@ -108,7 +108,7 @@ proc build {prot mem args}  {
   $good writepsf HOLD-solv.psf
   $good writepdb HOLD-solv.pdb
 
-# Cut into a Hexagon
+# Cut into a Hexagon (-hex == 1) or keep as Orthorhombic (-hex == 0)
   if {$opt(-hex) == 1} {
     mol delete all
     mol new HOLD-solv.psf
@@ -126,7 +126,7 @@ proc build {prot mem args}  {
     mol new HOLD-solv.psf
     mol addfile HOLD-solv.pdb
     set all [atomselect top all]
-    set InBounds [atomselect top "same residue as abs(x) < $rad and abs(y) < $rad"]
+    set InBounds [atomselect top "same residue as abs(x) < $opt(-rad) and abs(y) < $opt(-rad)"]
     $InBounds writepsf $opt(-o)-lwh.psf
     $InBounds writepdb $opt(-o)-lwh.pdb
   }
