@@ -5,7 +5,7 @@
 #
 # In the meantime, you must hard-code in the resID of the cysteins participating in disulfide bonds
 proc help {} {
-  puts "To run this program type: build <protein-prefix> <membrane-prefix> -o <outname> -iso <26/\[46\]/50> -ion <ion name> -wat <\[0\]/1> -rad <minimum radius> -hex <0/\[1\]> -mut <\[0\]/1> -z <\[200\]>"
+  puts "To run this program type: build <protein-prefix> <membrane-prefix> \n-o <outname> -iso <26/\[46\]/50> -ion <ion name> \n-wat <\[0\]/1> -rad <minimum radius> -hex <0/\[1\]> \n-mut <\[0\]/1> -z <\[200\]> -hmr <0/\[1\]>"
 }
 help
 proc build {prot mem args}  {
@@ -147,9 +147,22 @@ proc build {prot mem args}  {
   # Merge ionized systems back together
   merge "oution" "inion" $opt(-o)-lwih
 
+  # Perform Hydrogen Mass-Repartitioning
+  if {$opt(-hmr) == 1} {
+    package require psfgen
+    resetpsf
+    readpsf $opt(-o)-lwih.psf
+    hmassrepart
+    writepsf $opt(-o)-lwih.hmr.psf
+    writepdb $opt(-o)-lwih.hmr.pdb
+  }
   # Prepare NAMD input files
   mol delete all
-  mol new $opt(-o)-lwih.psf
+  if {$opt(-hmr) == 1} {
+    mol new $opt(-o)-lwih.hmr.psf
+  } elseif {$opt(-hmr) == 0} {
+    mol new $opt(-o)-lwih.psf
+  }
   mol addfile $opt(-o)-lwih.pdb
   set all [atomselect top all]
   set prot [atomselect top protein]
