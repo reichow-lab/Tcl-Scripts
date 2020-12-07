@@ -5,12 +5,12 @@
 #
 # In the meantime, you must hard-code in the resID of the cysteins participating in disulfide bonds
 proc help {} {
-  puts "To run this program type: build <protein-prefix> <membrane-prefix> -o <outname> -iso <26/\[46\]/50> -ion <ion name> -wat <\[0\]/1> -rad <minimum radius> -hex <0/\[1\]> -mut <\[0\]/1>"
+  puts "To run this program type: build <protein-prefix> <membrane-prefix> -o <outname> -iso <26/\[46\]/50> -ion <ion name> -wat <\[0\]/1> -rad <minimum radius> -hex <0/\[1\]> -mut <\[0\]/1> -z <\[200\]>"
 }
 help
 proc build {prot mem args}  {
   # Set named arguments
-  array set opt [concat {-o "TEST" -iso "46" -ion "POT" -wat 0 -rad 70 -hex 1 -mut 0} $args]
+  array set opt [concat {-o "TEST" -iso "46" -ion "POT" -wat 0 -rad 70 -hex 1 -mut 0 -z 200} $args]
   mol new $prot.pdb
   # Find all terminal residues for patching
   set termID ""
@@ -22,7 +22,6 @@ proc build {prot mem args}  {
     set c [lindex $CAlist [expr $i - 1]]
     if {[expr $b - $a] != [expr $a - $c]} {lappend termID $a}
   }
-
   # Create protein psf (acetylated n-termini) and center it in the system.
   buildCx [lindex $termID 0] [lindex $termID 1] [lindex $termID 2] [lindex $termID 3] HOLD-temp $opt(-iso) $opt(-wat) $opt(-mut)
   mol delete all
@@ -80,10 +79,11 @@ proc build {prot mem args}  {
   mol addfile HOLD-lipids.pdb
   set phosP [atomselect top "lipids and name P"]
   set vec [measure minmax $phosP]
+  set halfz [expr $opt(-z) / 2]
   set negZ [vecinvert [list 0 0 [lindex $vec 0 2]]]
-  set watvec1 [vecadd [lindex $vec 0] $negZ {0 0 -100}]
+  set watvec1 [vecadd [lindex $vec 0] $negZ {0 0 -$halfz}]
   set posZ [vecinvert [list 0 0 [lindex $vec 1 2]]]
-  set watvec2 [vecadd [lindex $vec 1] $posZ {0 0 100}]
+  set watvec2 [vecadd [lindex $vec 1] $posZ {0 0 $halfz}]
   solvate HOLD-lipids.psf HOLD-lipids.pdb -o HOLD-RAW -b 1.5 -minmax [list $watvec1 $watvec2]
 
   # Delete waters that are overlapping in the lipid region
@@ -200,17 +200,17 @@ proc merge {pdb1 pdb2 outname} {
 }
 proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
   if {$mut == 1} {
-    puts "How many mutations would you like to make? "
+    puts -nonewline "How many mutations would you like to make? "
     flush stdout
     set mutnum [gets stdin]
     for {set m 0} {$m < $mutnum} {incr m} {
-      puts "RESID? "
+      puts -nonewline "RESID? "
       flush stdout
       lappend mres [gets stdin]
-      puts "segn or segc (type 'n' or 'c')"
+      puts -nonewline "segn or segc (type 'n' or 'c')"
       flush stdout
       lappend mseg [gets stdin]
-      puts "New AA? "
+      puts -nonewline "New AA? "
       flush stdout
       lappend mcod [gets stdin]
     }
