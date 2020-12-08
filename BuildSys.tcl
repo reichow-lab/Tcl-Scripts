@@ -5,12 +5,12 @@
 #
 # In the meantime, you must hard-code in the resID of the cysteins participating in disulfide bonds
 proc help {} {
-  puts "To run this program type: build <protein-prefix> <membrane-prefix> \n-o <outname> -iso <26/\[46\]/50> -ion <ion name> \n-wat <\[0\]/1> -rad <minimum radius> -hex <0/\[1\]> \n-mut <\[0\]/1> -z <\[200\]> -hmr <0/\[1\]>"
+  puts "To run this program type: \nbuild <protein-prefix> <membrane-prefix> \n-o <outname> -iso <26/\[46\]/50> -ion <ion name> \n-wat <\[0\]/1> -rad <minimum radius> -hex <0/\[1\]> \n-mut <\[0\]/1> -z <\[200\]> -hmr <0/\[1\]> -ace <0/\[1\]>"
 }
 help
 proc build {prot mem args}  {
   # Set named arguments
-  array set opt [concat {-o "TEST" -iso "46" -ion "POT" -wat 0 -rad 70 -hex 1 -mut 0 -z 200 -hmr 1} $args]
+  array set opt [concat {-o "TEST" -iso "46" -ion "POT" -wat 0 -rad 70 -hex 1 -mut 0 -z 200 -hmr 1 -ace 1} $args]
   mol new $prot.pdb
   # Find all terminal residues for patching
   set termID ""
@@ -23,7 +23,7 @@ proc build {prot mem args}  {
     if {[expr $b - $a] != [expr $a - $c]} {lappend termID $a}
   }
   # Create protein psf (acetylated n-termini) and center it in the system.
-  buildCx [lindex $termID 0] [lindex $termID 1] [lindex $termID 2] [lindex $termID 3] HOLD-temp $opt(-iso) $opt(-wat) $opt(-mut)
+  buildCx [lindex $termID 0] [lindex $termID 1] [lindex $termID 2] [lindex $termID 3] HOLD-temp $opt(-iso) $opt(-wat) $opt(-mut) $opt(-ace)
   mol delete all
   mol new HOLD-temp.psf
   mol addfile HOLD-temp.pdb
@@ -218,7 +218,7 @@ proc merge {pdb1 pdb2 outname} {
   writepsf $outname.psf
   writepdb $outname.pdb
 }
-proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
+proc buildCx {NT ICC ICN CT outname iso strucwat mut ace} {
   if {$mut == 1} {
     puts -nonewline "How many mutations would you like to make? "
     flush stdout
@@ -261,7 +261,8 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut} {
     resetpsf
     pdbalias residue HIS HSD
     segment $segn {
-      first ACE
+      if {$ace == 1} {first ACE
+      } else {first NONE}
       last NONE
       pdb chain-$segn.pdb
       if {$mut == 1} {
