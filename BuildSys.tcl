@@ -262,7 +262,7 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut ace} {
     pdbalias residue HIS HSD
     segment $segn {
       if {$ace == 1} {first ACE
-      } else {first NONE}
+      } else {first NTER}
       last NONE
       pdb chain-$segn.pdb
       if {$mut == 1} {
