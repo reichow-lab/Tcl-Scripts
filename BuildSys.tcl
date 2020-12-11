@@ -251,8 +251,8 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut ace} {
     $sel2 writepdb chain-$chain$j.pdb
   }
 
-  topology /home/bassam/Topology\ and\ Parameters/top_all36_prot.rtf
-  topology /home/bassam/Topology\ and\ Parameters/toppar_water_ions_namd.str
+  topology /home/bassam/Topology_and_Parameters/top_all36_prot.rtf
+  topology /home/bassam/Topology_and_Parameters/toppar_water_ions_namd.str
 
   pdbalias residue HIS HSD
   set segN [list A1 B1 C1 D1 E1 F1 G1 H1 I1 J1 K1 L1]
