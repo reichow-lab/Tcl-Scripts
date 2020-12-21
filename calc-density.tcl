@@ -38,6 +38,7 @@ proc iondensity {ofile} {
 
 	if {[$s num] != 0} {volmap density $s -allframes -combine avg -res 1.0 -o $ofile$send}
 	if {[$k num] != 0} {volmap density $k -allframes -combine avg -res 1.0 -o $ofile$kend}
+	if {[$c num] != 0} {volmap density $c -allframes -combine avg -res 1.0 -o $ofile$cend}
 
 	puts "Finished all calculations."
 }
