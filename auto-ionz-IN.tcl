@@ -30,7 +30,7 @@ proc run {ofile IonName id} {
 ## Open output-file
 	set output [open $ofile.txt w]
 	foreach IND $ind {
-    puts $output "IonID: $IND"
+    		puts $output "IonID: $IND"
 		set ion [atomselect $molid "index $IND"]
 ## Loop over frames
 		for {set f 0} {$f < $numframes} {incr f} {
@@ -43,7 +43,7 @@ proc run {ofile IonName id} {
 			puts $output "$f\t$pos"
 		}
 	}
-  close	$output
+  	close	$output
 }
 proc	ionz	{in} {
 	set	infile	[open $in r]
