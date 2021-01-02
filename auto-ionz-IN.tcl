@@ -26,15 +26,12 @@ proc run {ofile IonName id} {
 	set ind [$ION get index]
 	set num_ion [$ION num]
 	set prot [atomselect $molid protein]
-	set n 0
-	foreach IND $ind {
-		set filename [concat $ofile$n]
-		incr n
-		set ion [atomselect $molid "index $IND"]
-## Get number of frames loaded into top molecule
-		set numframes [molinfo $molid get numframes]
+	set numframes [molinfo $molid get numframes]
 ## Open output-file
-		set output [open $filename w]
+	set output [open $ofile.txt w]
+	foreach IND $ind {
+    puts $output "IonID: $IND"
+		set ion [atomselect $molid "index $IND"]
 ## Loop over frames
 		for {set f 0} {$f < $numframes} {incr f} {
 			animate goto $f
@@ -45,17 +42,17 @@ proc run {ofile IonName id} {
 			set pos		[expr $ionz - $protz]
 			puts $output "$f\t$pos"
 		}
-		close	$output
 	}
+  close	$output
 }
 proc	ionz	{in} {
 	set	infile	[open $in r]
 	set	inread	[read -nonewline $infile]
-	set	inputs	[split $inread "\n"]	
-	close	$infile	
+	set	inputs	[split $inread "\n"]
+	close	$infile
 	## The input file will contain the CryoEM .psf/.pdb, .psf/.dcd, CatOUT, AnOUT, CatIon, AnIon
 	##					      0          1         2      3       4      5
-	set	m	0	
+	set	m	0
 	foreach	line	$inputs {
 		mol new		[lindex $line 0].psf
 		mol addfile	[lindex $line 0].pdb
