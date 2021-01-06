@@ -36,9 +36,9 @@ proc iondensity {ofile} {
 
 	puts "Finished chloride, starting cation density calculation."
 
-	if {[$s num] != 0} {volmap density $s -allframes -combine avg -res 0.649 -minmax [list {-150 -150 -150} {150 150 150}] -o $ofile$send}
-	if {[$k num] != 0} {volmap density $k -allframes -combine avg -res 0.649 -minmax [list {-150 -150 -150} {150 150 150}] -o $ofile$kend}
-	if {[$c num] != 0} {volmap density $c -allframes -combine avg -res 0.649 -minmax [list {-150 -150 -150} {150 150 150}] -o $ofile$cend}
+	if {[$s num] != 0} {volmap density $s -allframes -combine avg -res 0.649 -minmax [list {-150 -150 -150} {110 110 110}] -o $ofile$send}
+	if {[$k num] != 0} {volmap density $k -allframes -combine avg -res 0.649 -minmax [list {-150 -150 -150} {110 110 110}] -o $ofile$kend}
+	if {[$c num] != 0} {volmap density $c -allframes -combine avg -res 0.649 -minmax [list {-150 -150 -150} {110 110 110}] -o $ofile$cend}
 
 	puts "Finished all calculations."
 }
