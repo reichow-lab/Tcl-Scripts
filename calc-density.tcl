@@ -1,8 +1,8 @@
 source	~/Scripts/TCL/Tcl-Scripts/auto-ionz-IN.tcl
 set	PO_tail_text "lipid and (name C22 to C29 C210 to C218 C32 to C39 C310 to C316)"
 set	DM_tail_text "lipid and (name C22 to C29 C210 to C214 C32 to C39 C310 to C314)"
-set     PC_head_text "lipid and (name O21 O22 O31 O32 O11 to O14 C1 C2 C21 C3 C31 C11 to C15 P N)"
-set	prot_text    "protein and noh" 
+set PC_head_text "lipid and (name O21 O22 O31 O32 O11 to O14 C1 C2 C21 C3 C31 C11 to C15 P N)"
+set	prot_text    "protein and noh"
 
 puts	"To run this program type ~ iondensity <ofile> ~ or ~ popcdensity <ofile> ~ or ~ dmpcdensity <ofile>."
 
@@ -36,9 +36,9 @@ proc iondensity {ofile} {
 
 	puts "Finished chloride, starting cation density calculation."
 
-	if {[$s num] != 0} {volmap density $s -allframes -combine avg -res 0.649 -o $ofile$send}
-	if {[$k num] != 0} {volmap density $k -allframes -combine avg -res 0.649 -o $ofile$kend}
-	if {[$c num] != 0} {volmap density $c -allframes -combine avg -res 0.649 -o $ofile$cend}
+	if {[$s num] != 0} {volmap density $s -allframes -combine avg -res 0.649 -minmax [list {-150 -150 -150} {150 150 150}] -o $ofile$send}
+	if {[$k num] != 0} {volmap density $k -allframes -combine avg -res 0.649 -minmax [list {-150 -150 -150} {150 150 150}] -o $ofile$kend}
+	if {[$c num] != 0} {volmap density $c -allframes -combine avg -res 0.649 -minmax [list {-150 -150 -150} {150 150 150}] -o $ofile$cend}
 
 	puts "Finished all calculations."
 }
@@ -74,7 +74,7 @@ proc dmpcdensity {ofile} {
 #	volmap density $lip_head -allframes -combine avg -res 0.649 -o $ofile$lip_head_end
 
 	volmap density $lip_tail -allframes -combine avg -res 0.649 -o $ofile$lip_tail_end
-	
+
 #	volmap density $lip_tot  -allframes -combine avg -res 0.649 -o $ofile$lip_tot_end
 }
 
@@ -100,7 +100,7 @@ proc autodensity {in} {
 
 	## The input file will contain the following: .psf/.pdb, .psf/.dcd, ofile
 	##						   0	      1	      2
-	
+
 	set	m	0
 
 	foreach line	$inputs {
