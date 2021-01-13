@@ -334,8 +334,7 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut ace} {
       patch DISU $segn:[lindex $disuList 0 1] $segc:[lindex $disuList 0 4]
       patch DISU $segn:[lindex $disuList 0 2] $segc:[lindex $disuList 0 5]
       incr counter
-    }
-    else {
+    } else {
       patch DISU $segn:[lindex $disuList 1 0] $segc:[lindex $disuList 1 3]
       patch DISU $segn:[lindex $disuList 1 1] $segc:[lindex $disuList 1 4]
       patch DISU $segn:[lindex $disuList 1 2] $segc:[lindex $disuList 1 5]
