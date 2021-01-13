@@ -236,9 +236,11 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut ace} {
     }
   }
 
-  if {$iso == "46"} {set disuList [list 54 61 65 189 183 178]
-  } elseif {$iso == "50"} {set disuList [list 54 61 65 201 195 190]
-  } elseif {$iso == "26"} {set disuList [list 53 60 64 180 174 169]}
+  if {$iso == "46"} {set disuList [list [list 54 61 65 189 183 178] [list 54 61 65 189 183 178]]
+  } elseif {$iso == "50"} {set disuList [list [list 54 61 65 201 195 190] [list 54 61 65 201 195 190]]
+  } elseif {$iso == "26"} {set disuList [list [list 53 60 64 180 174 169] [list 53 60 64 180 174 169]]
+  } elseif {$iso == "het"} {set disuList [list [list 54 61 65 189 183 178] [list 54 61 65 201 195 190]]}
+  # For het to work, 46 will need to be chains A-F, and 50 will be G-L
   package require psfgen
   resetpsf
   set i 1
@@ -325,10 +327,20 @@ proc buildCx {NT ICC ICN CT outname iso strucwat mut ace} {
     readpsf strucwat.psf
     coordpdb strucwat.pdb
   }
+  set counter 0
   foreach segn $segN segc $segC {
-    patch DISU $segn:[lindex $disuList 0] $segc:[lindex $disuList 3]
-    patch DISU $segn:[lindex $disuList 1] $segc:[lindex $disuList 4]
-    patch DISU $segn:[lindex $disuList 2] $segc:[lindex $disuList 5]
+    if {$counter < 6} {
+      patch DISU $segn:[lindex $disuList 0 0] $segc:[lindex $disuList 0 3]
+      patch DISU $segn:[lindex $disuList 0 1] $segc:[lindex $disuList 0 4]
+      patch DISU $segn:[lindex $disuList 0 2] $segc:[lindex $disuList 0 5]
+      incr counter
+    }
+    else {
+      patch DISU $segn:[lindex $disuList 1 0] $segc:[lindex $disuList 1 3]
+      patch DISU $segn:[lindex $disuList 1 1] $segc:[lindex $disuList 1 4]
+      patch DISU $segn:[lindex $disuList 1 2] $segc:[lindex $disuList 1 5]
+    }
+  }
   }
   writepsf $outname.psf
   writepdb $outname.pdb
