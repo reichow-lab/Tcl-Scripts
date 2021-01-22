@@ -27,8 +27,8 @@ proc run {ofile zmin zmax} {
 		set	num_cla		0
 		for {set j $zmax} {$j > $zmin} {set j [expr $j - 1]} {
 			set pot [atomselect top "name POT and ((z > [expr $j - 1] and z < $j) and (x^2 + y^2 < (25)^2))"]
-	                set cla [atomselect top "name CLA and ((z > [expr $j - 1] and z < $j) and (x^2 + y^2 < (25)^2))"]
-			set b [expr $j -1]
+	    set cla [atomselect top "name CLA and ((z > [expr $j - 1] and z < $j) and (x^2 + y^2 < (25)^2))"]
+			set b [expr $j - 1]
 			set num_pot	[expr $num_pot + [$pot num]]
 			set num_cla	[expr $num_cla + [$cla num]]
 		}

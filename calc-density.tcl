@@ -23,9 +23,11 @@ proc iondensity {ofile} {
 	set	s [atomselect top "name SOD and segname ION"]
 	set	k [atomselect top "name POT and segname ION"]
 	set	c [atomselect top "name CES and segname ION"]
+	set ca [atomselect top "name CAL"]
 	set	kend "_potden.dx"
 	set	send "_sodden.dx"
 	set	cend "_cesden.dx"
+	set caend "_calden.dx"
 	#puts "Beginning water density calculation."
 
 	#volmap density $wat -allframes -combine avg -res 0.649 -o $ofile$watend
@@ -39,7 +41,7 @@ proc iondensity {ofile} {
 	if {[$s num] != 0} {volmap density $s -allframes -combine avg -res 0.649 -minmax [list {-100 -100 -100} {100 100 100}] -o $ofile$send}
 	if {[$k num] != 0} {volmap density $k -allframes -combine avg -res 0.649 -minmax [list {-100 -100 -100} {100 100 100}] -o $ofile$kend}
 	if {[$c num] != 0} {volmap density $c -allframes -combine avg -res 0.649 -minmax [list {-100 -100 -100} {100 100 100}] -o $ofile$cend}
-
+  if {[$ca num] !=0} {volmap density $ca -allframes -combine avg -res 0.649 -minmax [list {-100 -100 -100} {100 100 100}] -o $ofile$caend}
 	puts "Finished all calculations."
 }
 
