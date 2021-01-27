@@ -11,7 +11,7 @@ proc align {rmolid smolid} {
         set ref_frame [atomselect $ref_molid "protein and name CA" frame 0]
 
         set n 1
- 
+
  	set sys [atomselect $sel_molid all]
 
         for {set i 0} {$i < $numframes} {incr i} {
@@ -34,7 +34,7 @@ proc align {rmolid smolid} {
         }
 
 }
-proc run {ofile resi resf} {
+proc run {ofile} {
 
 	set initframe 0
 
@@ -70,7 +70,7 @@ proc	 autormsd    {in} {
          close   $infile
 
          ## The input file will contain the CryoEM .psf/.pdb, .psf/.dcd, OUT, ResI, ResF
-         ##                                            0          1       2    3     4      
+         ##                                            0          1       2    3     4
          set     m       0
 
          foreach line    $inputs {
@@ -94,4 +94,3 @@ proc	 autormsd    {in} {
                  set     m       [expr $m + 2]
          }
  }
-
