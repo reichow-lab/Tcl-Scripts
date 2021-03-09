@@ -22,11 +22,11 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
   foreach line $DATA {
     if {[string is double -strict [lindex $line 1]]} {
       if {[expr abs([lindex $line 1])] <= $min} {
-        lappend Bin0 [list [lindex $line 0] [lindex $line 1] 0]
+        lappend Bin0 [lindex $line 0]
       } elseif {([expr abs([lindex $line 1])] > $min) && ([expr abs([lindex $line 1])] <= $mid)} {
-        lappend Bin1 [list [lindex $line 0] [lindex $line 1] 1]
+        lappend Bin1 [lindex $line 0]
       } elseif {[expr abs([lindex $line 1])] > $mid} {
-        lappend Bin2 [list [lindex $line 0] [lindex $line 1] 2]
+        lappend Bin2 [lindex $line 0]
       }
     }
   }
@@ -46,6 +46,7 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
   # Now that the frames are ordered, properly order the dcd
   set b 0
   foreach Bin $BINS {
+    puts "$Bin"
     mol new $PSFin
     foreach dcd $DCDinList {
       mol addfile $dcd step $st waitfor all
