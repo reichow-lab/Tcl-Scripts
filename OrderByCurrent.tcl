@@ -8,7 +8,7 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
   # read through the data and find the maximum Current
   set max 0
   foreach line $DATA {
-    if {string is double -strict [lindex $line 1]} {
+    if {[string is double -strict [lindex $line 1]]} {
       if {[expr abs([lindex $line 1])] > $max} {set max [expr abs([lindex $line 1])]}
     }
   }
