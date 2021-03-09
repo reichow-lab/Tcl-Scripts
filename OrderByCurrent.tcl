@@ -22,11 +22,11 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
   foreach line $DATA {
     if {[string is double -strict [lindex $line 1]]} {
       if {[expr abs([lindex $line 1])] <= $min} {
-        lappend Bin0 [lindex $line 0]
+        lappend Bin0 [expr int([lindex $line 0])]
       } elseif {([expr abs([lindex $line 1])] > $min) && ([expr abs([lindex $line 1])] <= $mid)} {
-        lappend Bin1 [lindex $line 0]
+        lappend Bin1 [expr int([lindex $line 0])]
       } elseif {[expr abs([lindex $line 1])] > $mid} {
-        lappend Bin2 [lindex $line 0]
+        lappend Bin2 [expr int([lindex $line 0])]
       }
     }
   }
