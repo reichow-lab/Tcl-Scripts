@@ -21,12 +21,14 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
   set Bin1 {}
   set Bin2 {}
   foreach line $DATA {
-    if {[expr abs([lindex $line 1])] <= $min} {
-      lappend Bin0 [list [lindex $line 0] [lindex $line 1] 0]
-    } elseif {([expr abs([lindex $line 1])] > $min) && ([expr abs([lindex $line 1])] <= $mid)} {
-      lappend Bin1 [list [lindex $line 0] [lindex $line 1] 1]
-    } elseif {[expr abs([lindex $line 1])] > $mid} {
-      lappend Bin2 [list [lindex $line 0] [lindex $line 1] 2]
+    if {[string is double -strict [lindex $line 1]]} {
+      if {[expr abs([lindex $line 1])] <= $min} {
+        lappend Bin0 [list [lindex $line 0] [lindex $line 1] 0]
+      } elseif {([expr abs([lindex $line 1])] > $min) && ([expr abs([lindex $line 1])] <= $mid)} {
+        lappend Bin1 [list [lindex $line 0] [lindex $line 1] 1]
+      } elseif {[expr abs([lindex $line 1])] > $mid} {
+        lappend Bin2 [list [lindex $line 0] [lindex $line 1] 2]
+      }
     }
   }
   puts "debug-2"
