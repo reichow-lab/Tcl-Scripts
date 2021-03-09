@@ -9,7 +9,7 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
   set max 0
   foreach line $DATA {
     puts "[lindex $line 1]"
-    if {abs([lindex $line 1]) >= $max} {set max [lindex $line 1]}
+    if {abs([lindex $line 1]) >= $max} {set max abs([lindex $line 1])}
     puts "$max"
   }
   puts "debug-1"
