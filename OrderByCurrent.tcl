@@ -10,6 +10,7 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
   foreach line $DATA {
     puts "[lindex $line 1]"
     if {abs([lindex $line 1]) >= $max} {set max [lindex $line 1]}
+    puts "$max"
   }
   puts "debug-1"
   # simply split into 3 groups: min mid max
