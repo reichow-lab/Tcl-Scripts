@@ -48,7 +48,7 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
   # Now that the frames are ordered, properly order the dcd
   set b 0
   foreach Bin $BINS {
-    mol new $PSFin.psf
+    mol new $PSFin
     foreach dcd $DCDinList {
       mol addfile $dcd step $st waitfor all
     }
