@@ -32,19 +32,8 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st polarity} {
       }
     }
   }
-  puts "$Bin1"
   # rearrange the order of the assigned frame_list
   set BINS [list $Bin0 $Bin1 $Bin2]
-  set b 0
-  set ordered {}
-  foreach bin $BINS {
-    foreach line $bin {
-      if {[lindex $line 2] == $b} {
-        lappend ordered [lindex $line 0]
-      }
-    }
-    incr b
-  }
   # Now that the frames are ordered, properly order the dcd
   set b 0
   foreach Bin $BINS {
