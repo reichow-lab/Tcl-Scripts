@@ -1,6 +1,6 @@
 puts "create a list of dcd's that you want processed."
 
-proc orderbycurrent {TextIN PSFin DCDinList outname st} {
+proc orderbycurrent {TextIN PSFin DCDinList outname st polarity} {
   set INFILE [open $TextIN r]
   set INDATA [read $INFILE]
   close $INFILE
@@ -9,12 +9,12 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
   set max 0
   foreach line $DATA {
     if {[string is double -strict [lindex $line 1]]} {
-      if {[expr abs([lindex $line 1])] > $max} {set max [expr abs([lindex $line 1])]}
+      if {[expr abs([lindex $line 1])] > [expr abs($max)]} {set max [lindex $line 1]}
     }
   }
   # simply split into 3 groups: min mid max
-  set min [expr $max / 3.0]
-  set mid [expr $max * (2.0 / 3.0)]
+  set min [expr $polarity * $max / 3.0]
+  set mid [expr $polarity * $max * (2.0 / 3.0)]
   puts "$min, $mid, $max"
   # generate list of frames and their assignments
   set Bin0 {}
@@ -22,11 +22,11 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
   set Bin2 {}
   foreach line $DATA {
     if {[string is double -strict [lindex $line 1]]} {
-      if {[expr abs([lindex $line 1])] <= $min} {
+      if {[expr $polatiry * [lindex $line 1]] <= $min} {
         lappend Bin0 [expr int([lindex $line 0])]
-      } elseif {([expr abs([lindex $line 1])] > $min) && ([expr abs([lindex $line 1])] <= $mid)} {
+      } elseif {([expr $polarity * [lindex $line 1]] > $min) && ([expr $polarity * [lindex $line 1]] <= $mid)} {
         lappend Bin1 [expr int([lindex $line 0])]
-      } elseif {[expr abs([lindex $line 1])] > $mid} {
+      } elseif {[expr $polarity * [lindex $line 1])] > $mid} {
         lappend Bin2 [expr int([lindex $line 0])]
       }
     }
