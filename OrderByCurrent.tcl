@@ -13,9 +13,9 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st polarity} {
     }
   }
   # simply split into 3 groups: min mid max
-  set max [expr $polarity * $max]
   set min [expr $polarity * $max / 3.0]
   set mid [expr $polarity * $max * (2.0 / 3.0)]
+  set max [expr $polarity * $max]
   puts "$min, $mid, $max"
   # generate list of frames and their assignments
   set Bin0 {}
