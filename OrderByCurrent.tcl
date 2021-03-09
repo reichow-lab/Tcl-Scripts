@@ -45,6 +45,7 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st polarity} {
     set numframes [molinfo top get numframes]
     for {set i [expr $numframes -1]} {$i >= 0} {incr i -1} {
       animate goto $i
+      puts $i
       if {[lsearch $Bin $i] >= 0} {continue
   		} else {animate delete beg $i end $i top}
     }
