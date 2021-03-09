@@ -31,7 +31,7 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
       }
     }
   }
-  puts "debug-2"
+  puts "$Bin0"
   # rearrange the order of the assigned frame_list
   set BINS [list $Bin0 $Bin1 $Bin2]
   set b 0
