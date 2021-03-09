@@ -54,7 +54,7 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
     set numframes [molinfo top get numframes]
     for {set i [expr $numframes -1]} {$i >= 0} {incr i -1} {
       animate goto $i
-      if {[lsearch -exact $Bin $i] >= 0} {puts "save"
+      if {[lsearch $Bin $i] >= 0} {puts "save"
   		} else {animate delete beg $i end $i top}
     }
     set all [atomselect top all]
