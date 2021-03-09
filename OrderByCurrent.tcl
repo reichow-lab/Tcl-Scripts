@@ -50,7 +50,7 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st polarity} {
     }
     set all [atomselect top all]
     animate write dcd $outname.Bin$b.dcd beg 0 end -1 waitfor all sel $all top
-    #mol delete top
+    mol delete top
     incr b
   }
 }
