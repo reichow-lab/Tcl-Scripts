@@ -8,7 +8,7 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
   # read through the data and find the maximum Current
   set max 0
   foreach line $DATA {
-    if {[lindex $line 1] >= $max} {set max [lindex $line 1]}
+    if {abs([lindex $line 1]) >= $max} {set max [lindex $line 1]}
   }
   # simply split into 3 groups: min mid max
   set min [expr $max / 3.0]
@@ -18,26 +18,27 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
   set Bin1 {}
   set Bin2 {}
   foreach line $DATA {
-    if {[lindex $line 1] <= $min} {
+    if {abs([lindex $line 1]) <= $min} {
       lappend Bin0 [list [lindex $line 0] [lindex $line 1] 0]
-    } elseif {([lindex $line 1] > $min) && ([lindex $line 1] <= $mid)} {
+    } elseif {(abs([lindex $line 1]) > $min) && (abs([lindex $line 1]) <= $mid)} {
       lappend Bin1 [list [lindex $line 0] [lindex $line 1] 1]
-    } elseif {[lindex $line 1] > $mid} {
+    } elseif {abs([lindex $line 1]) > $mid} {
       lappend Bin2 [list [lindex $line 0] [lindex $line 1] 2]
     }
   }
   # rearrange the order of the assigned frame_list
-  set BINS [list 0 1 2]
+  set BINS [list $Bin0 $Bin1 $Bin2]
+  set b 0
   set ordered {}
   foreach bin $BINS {
-    foreach line $assigned {
-      if {[lindex $line 2] == $bin} {
+    foreach line $bin {
+      if {[lindex $line 2] == $b} {
         lappend ordered [lindex $line 0]
       }
     }
+    incr b
   }
   # Now that the frames are ordered, properly order the dcd
-  set BINS [list $Bin0 $Bin1 $Bin2]
   set b 0
   foreach Bin $BINS {
     mol new $PSFin.psf
