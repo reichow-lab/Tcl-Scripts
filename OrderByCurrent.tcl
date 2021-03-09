@@ -21,11 +21,11 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
   set Bin1 {}
   set Bin2 {}
   foreach line $DATA {
-    if {abs([lindex $line 1]) <= $min} {
+    if {[expr abs([lindex $line 1])] <= $min} {
       lappend Bin0 [list [lindex $line 0] [lindex $line 1] 0]
-    } elseif {(abs([lindex $line 1]) > $min) && (abs([lindex $line 1]) <= $mid)} {
+    } elseif {([expr abs([lindex $line 1])] > $min) && ([expr abs([lindex $line 1])] <= $mid)} {
       lappend Bin1 [list [lindex $line 0] [lindex $line 1] 1]
-    } elseif {abs([lindex $line 1]) > $mid} {
+    } elseif {[expr abs([lindex $line 1])] > $mid} {
       lappend Bin2 [list [lindex $line 0] [lindex $line 1] 2]
     }
   }
