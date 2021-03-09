@@ -15,6 +15,7 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st} {
   # simply split into 3 groups: min mid max
   set min [expr $max / 3.0]
   set mid [expr $max * (2.0 / 3.0)]
+  puts "$min, $mid, $max"
   # generate list of frames and their assignments
   set Bin0 {}
   set Bin1 {}
