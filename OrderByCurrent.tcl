@@ -26,7 +26,7 @@ proc orderbycurrent {TextIN PSFin DCDinList outname st polarity} {
         lappend Bin0 [expr int([lindex $line 0])]
       } elseif {([expr $polarity * [lindex $line 1]] > $min) && ([expr $polarity * [lindex $line 1]] <= $mid)} {
         lappend Bin1 [expr int([lindex $line 0])]
-      } elseif {[expr $polarity * [lindex $line 1])] > $mid} {
+      } elseif {[expr $polarity * [lindex $line 1]] > $mid} {
         lappend Bin2 [expr int([lindex $line 0])]
       }
     }
