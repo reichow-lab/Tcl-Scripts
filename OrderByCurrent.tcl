@@ -23,7 +23,7 @@ proc orderbycurrent {TextIN PSFin DCDinList peaklist outname st} {
     if {[string is double -strict [lindex $line 1]]} {
       if {[lindex $line 1] <= [expr $minmid]} {
         lappend Bin0 [expr int([lindex $line 0])]
-      } elseif {([lindex $line 1]] > $minmid) && ([lindex $line 1] <= $midmax)} {
+      } elseif {([lindex $line 1] > $minmid) && ([lindex $line 1] <= $midmax)} {
         lappend Bin1 [expr int([lindex $line 0])]
       } elseif {[lindex $line 1] > $midmax} {
         lappend Bin2 [expr int([lindex $line 0])]
