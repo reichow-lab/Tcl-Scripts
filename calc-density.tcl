@@ -30,18 +30,18 @@ proc iondensity {ofile} {
 	set caend "_calden.dx"
 	#puts "Beginning water density calculation."
 
-	#volmap density $wat -allframes -combine avg -res 0.649 -o $ofile$watend
+	volmap density $wat -allframes -combine avg -res 0.996 -minmax [list {-300 -300 -300} {300 300 300}] -o $ofile$watend
 
 	puts "Starting chloride density calculation."
 
-	volmap density $cl -allframes -combine avg -res 0.649 -o $ofile$clend
+	volmap density $cl -allframes -combine avg -res 0.996 -minmax [list {-300 -300 -300} {300 300 300}] -o $ofile$clend
 
 	puts "Finished chloride, starting cation density calculation."
 
-	if {[$s num] != 0} {volmap density $s -allframes -combine avg -res 0.649 -minmax [list {-100 -100 -100} {100 100 100}] -o $ofile$send}
-	if {[$k num] != 0} {volmap density $k -allframes -combine avg -res 0.649 -minmax [list {-100 -100 -100} {100 100 100}] -o $ofile$kend}
-	if {[$c num] != 0} {volmap density $c -allframes -combine avg -res 0.649 -minmax [list {-100 -100 -100} {100 100 100}] -o $ofile$cend}
-  if {[$ca num] !=0} {volmap density $ca -allframes -combine avg -res 0.649 -minmax [list {-100 -100 -100} {100 100 100}] -o $ofile$caend}
+	if {[$s num] != 0} {volmap density $s  -allframes -combine avg -res 0.996 -minmax [list {-300 -300 -300} {300 300 300}] -o $ofile$send}
+	if {[$k num] != 0} {volmap density $k  -allframes -combine avg -res 0.996 -minmax [list {-300 -300 -300} {300 300 300}] -o $ofile$kend}
+	if {[$c num] != 0} {volmap density $c  -allframes -combine avg -res 0.996 -minmax [list {-300 -300 -300} {300 300 300}] -o $ofile$cend}
+  if {[$ca num] !=0} {volmap density $ca -allframes -combine avg -res 0.996 -minmax [list {-300 -300 -300} {300 300 300}] -o $ofile$caend}
 	puts "Finished all calculations."
 }
 
