@@ -14,7 +14,7 @@ proc holegen {ofile PDB RefMolID} {
 	# Center reference on channel
 
 	set ref_all	[atomselect $RefMolID all]
-	set ref_prot	[atomselect $RefMolID protein 0]
+	set ref_prot	[atomselect $RefMolID protein]
 
 	set prot_cen [measure center $ref_prot]
 
