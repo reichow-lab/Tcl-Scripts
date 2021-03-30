@@ -21,8 +21,9 @@ proc align {rmolid smolid} {
 proc run {ofile IonName id} {
 	set ion_name $IonName
 	set molid $id
-#	set ION [atomselect $molid "name $ion_name and not ((abs(z) < 40) and (x^2 + y^2 > 350))"]
-	set ION [atomselect $molid "name $ion_name and not ((abs(z) < 40) and (x^2 + y^2 > 500))"]
+  if {$IonName == 'water'} {
+    set ION [atomselect top $molid "water and name OH2"]
+  } else {set ION [atomselect $molid "name $ion_name and not ((abs(z) < 40) and (x^2 + y^2 > 500))"]}
 	set ind [$ION get index]
 	set num_ion [$ION num]
 	set prot [atomselect $molid protein]
@@ -36,11 +37,17 @@ proc run {ofile IonName id} {
 		for {set f 0} {$f < $numframes} {incr f} {
 			animate goto $f
 			set protcom	[measure center $prot]
+      set protx [lindex $protcom 0]
+      set proty [lindex $protcom 1]
 			set protz	[lindex $protcom 2]
 			set ioncom	[measure center $ion]
+      set ionx  [lindex $ioncom 0]
+      set iony  [lindex $ioncom 1]
 			set ionz	[lindex $ioncom 2]
-			set pos		[expr $ionz - $protz]
-			puts $output "$f\t$pos"
+      set posx  [expr $ionx - $protx]
+      set posy  [expr $iony - $proty]
+			set posz	[expr $ionz - $protz]
+			puts $output "$f\t$posx\t$posy\t$posz"
 		}
 	}
   	close	$output
