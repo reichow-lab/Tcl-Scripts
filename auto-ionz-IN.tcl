@@ -21,9 +21,7 @@ proc align {rmolid smolid} {
 proc run {ofile IonName id} {
 	set ion_name $IonName
 	set molid $id
-  if {$IonName == "water"} {
-    set ION [atomselect $molid "water and name OH2"]
-  } else {set ION [atomselect $molid "name $ion_name and not ((abs(z) < 40) and (x^2 + y^2 > 500))"]}
+  set ION [atomselect $molid "name $ion_name and not ((abs(z) < 40) and (x^2 + y^2 > 500))"]
 	set ind [$ION get index]
 	set num_ion [$ION num]
 	set prot [atomselect $molid protein]
