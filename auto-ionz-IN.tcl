@@ -15,10 +15,12 @@ proc align {rmolid smolid} {
                 animate goto $i
                 set align_frame [atomselect $sel_molid "protein and name CA"]
                 set trans_matrix [measure fit $align_frame $ref_frame]
+                $align_frame delete
+                unset trans_matrix
 		$sys move $trans_matrix
         }
 }
-proc run {ofile IonName id} {
+proc ionz {ofile IonName id} {
 	set ion_name $IonName
 	set molid $id
   set ION [atomselect $molid "name $ion_name and not ((abs(z) < 40) and (x^2 + y^2 > 500))"]
@@ -50,7 +52,7 @@ proc run {ofile IonName id} {
 	}
   	close	$output
 }
-proc	ionz	{in} {
+proc	autoionz	{in} {
 	set	infile	[open $in r]
 	set	inread	[read -nonewline $infile]
 	set	inputs	[split $inread "\n"]
