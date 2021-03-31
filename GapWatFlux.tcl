@@ -21,6 +21,7 @@ proc gapwatflux {outfile dt} {
     set C2 [atomselect top "name OH2 and ((z > -60 and z < $zb) and (x^2 + y^2 < 400))"]
     $C1 set beta 1
     $C2 set beta 2
+    unset C1 C2
     # loop through frames and perform analysis
     for {set i 1} {$i < $numframes} {incr i} {
       animate goto $i
@@ -34,7 +35,7 @@ proc gapwatflux {outfile dt} {
       set C2 [atomselect top "name OH2 and ((z > -60 and z < $zb) and (x^2 + y^2 < 400))"]
       $C1 set beta 1
       $C2 set beta 2
-      unset UpWat DnWat C1 C2
+      unset UpWat DnWat C1 C2 UpFlux DnFlux NetFlux
     }
   }
   # Write out the fluxes
