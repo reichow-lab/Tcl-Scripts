@@ -3,22 +3,21 @@
 
 
 proc align {rmolid smolid} {
-        set ref_molid $rmolid
-        set sel_molid $smolid
-        set numframes [molinfo $sel_molid get numframes]
+  set ref_molid $rmolid
+  set sel_molid $smolid
+  set numframes [molinfo $sel_molid get numframes]
 	animate goto 0
 	set prot [atomselect $ref_molid "protein and name CA"]
 	set sys [atomselect $sel_molid all]
 	$sys moveby [vecinvert [measure center $prot]]
-        set ref_frame [atomselect $ref_molid "protein and name CA" frame 0]
-        for {set i 0} {$i < $numframes} {incr i} {
-                animate goto $i
-                set align_frame [atomselect $sel_molid "protein and name CA"]
-                set trans_matrix [measure fit $align_frame $ref_frame]
-                $align_frame delete
-                unset trans_matrix
-		$sys move $trans_matrix
-        }
+  set ref_frame [atomselect $ref_molid "protein and name CA" frame 0]
+  for {set i 0} {$i < $numframes} {incr i} {
+    animate goto $i
+    set align_frame [atomselect $sel_molid "protein and name CA"]
+    set trans_matrix [measure fit $align_frame $ref_frame]
+    $align_frame delete
+    $sys move $trans_matrix
+    }
 }
 proc ionz {ofile IonName id} {
 	set ion_name $IonName
