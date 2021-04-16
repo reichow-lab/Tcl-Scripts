@@ -15,3 +15,17 @@ proc hcomd {outfile} {
 	}
 	close $outf
 }
+proc protvwat {outfile} {
+	set numf [molinfo top get numframes]
+	set outf [open $outfile-PvW.txt w]
+	puts $outf "Frame\tProtein-CZ\tWater-CZ"
+	for {set i 0} {$i < $numf} {incr i} {
+		animate goto $i
+		set prot_sel	[atomselect top "protein"]
+		set wat_sel		[atomselect top "water"]
+		set protCOM		[measure center $prot_sel]
+		set watCOM		[measure center $wat_sel]
+		puts $outf "$i\t[lindex $protCOM 2]\t[lindex $watCOM 2]"
+	}
+	close $outf
+}
