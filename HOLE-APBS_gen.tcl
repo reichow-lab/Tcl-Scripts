@@ -47,7 +47,6 @@ proc holegen {ofile PDB RefMolID} {
 
 		#set pdbfilename "$PDB$n.pdb"
 		set pdbfilename "$PDB-$n.pdb"
-		incr n
 		animate goto $i
 		set prot [atomselect top protein]
 		$prot writepdb $pdbfilename
@@ -60,11 +59,12 @@ proc holegen {ofile PDB RefMolID} {
 		puts	$HOLEout	"cvect\t0 0 1"
 		puts	$HOLEout	"cpoint\t0 0 0"
 		puts	$HOLEout	"sample\t1.0"
-		puts	$HOLEout	"ENDRAD\t14"
+		puts	$HOLEout	"ENDRAD\t17"
 		close	$HOLEout
 
-		puts	$APBSout	"read\n\tmol pqr $PDB$n.pqr\nend\nelec\n\tmg-auto\n\tdime 225 193 289\n\tcglen 149.6544 141.2020 217.5235\n\tfglen 108.0320 103.0600 147.9550\t\ncgcent mol 1\n\tfgcent mol 1\n\tmol 1\n\tlpbe\n\tbcfl sdh\n\tpdie 2.0000\n\tsdie 80.000\n\tsrfm smol\n\tchgm spl2\n\tsdens 10.00\n\tsrad 1.40\n\tswin 0.30\n\ttemp 310\n\tion 1 0.150 2.0\n\tion -1 0.150 2.0\n\tcalcenergy no\n\tcalcforce no\n\twrite pot dx $PDB$n.dx\nend\nquit"
+		puts	$APBSout	"read\n\tmol pqr $PDB-$n.pqr\nend\nelec\n\tmg-auto\n\tdime 225 193 289\n\tcglen 149.6544 141.2020 217.5235\n\tfglen 108.0320 103.0600 147.9550\t\ncgcent mol 1\n\tfgcent mol 1\n\tmol 1\n\tlpbe\n\tbcfl sdh\n\tpdie 2.0000\n\tsdie 80.000\n\tsrfm smol\n\tchgm spl2\n\tsdens 10.00\n\tsrad 1.40\n\tswin 0.30\n\ttemp 310\n\tion 1 0.150 2.0\n\tion -1 0.150 2.0\n\tcalcenergy no\n\tcalcforce no\n\twrite pot dx $PDB-$n\nend\nquit"
 		close	$APBSout
+		incr n
 	}
 }
 
