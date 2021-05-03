@@ -22,4 +22,5 @@ proc watres {outname CAT} {
     $bulkIon delete
     #unset numPore, numPoreIon, numBulk, numBulkIon, PoreRatio, BulkRatio
   }
+  close $out
 }
