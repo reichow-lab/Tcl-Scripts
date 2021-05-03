@@ -4,6 +4,7 @@ proc watres {outname CAT} {
   set out   [open $outname-WatRatio.txt w]
   puts $out "Frame\tPoreRatio\tBulkRatio"
   for {set i 0} {$i < $numf} {incr i} {
+    animate goto $i
     set pore    [atomselect top "water and same residue as ((abs(z) < 70) and (x^2 + y^2 < 500))"]
     set poreIon [atomselect top "water and same residue as ((abs(z) < 70) and (x^2 + y^2 < 500) and within 3 of (name $CAT))"]
     set bulk    [atomselect top "water and same residue as (abs(z) > 70)"]
