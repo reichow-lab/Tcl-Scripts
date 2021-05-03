@@ -6,9 +6,9 @@ proc watres {outname CAT} {
   for {set i 0} {$i < $numf} {incr i} {
     animate goto $i
     set pore    [atomselect top "water and same residue as ((abs(z) < 70) and (x^2 + y^2 < 500))"]
-    set poreIon [atomselect top "water and same residue as ((abs(z) < 70) and (x^2 + y^2 < 500) and within 10 of (name $CAT))"]
+    set poreIon [atomselect top "water and same residue as ((abs(z) < 70) and (x^2 + y^2 < 500) and within 20 of (name $CAT))"]
     set bulk    [atomselect top "water and same residue as (abs(z) > 70)"]
-    set bulkIon [atomselect top "water and same residue as ((abs(z) > 70) and within 10 of (name $CAT))"]
+    set bulkIon [atomselect top "water and same residue as ((abs(z) > 70) and within 20 of (name $CAT))"]
     set numPore     [$pore num]
     set numPoreIon  [$poreIon num]
     set numBulk     [$bulk num]
