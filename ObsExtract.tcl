@@ -41,7 +41,7 @@ proc run {ofile id {from "CZ"}} {
 		puts $outL "Chain:\t$chainI"
 		set DiHeIn {}
 		foreach name $DiHe {
-			set sel [atomselect top "protein and chain $chain and resid 47 and name $name"]
+			set sel [atomselect top "protein and chain $chainI and resid 47 and name $name"]
 			lappend DiHeIn [$sel get index]
 			$sel delete
 		}
