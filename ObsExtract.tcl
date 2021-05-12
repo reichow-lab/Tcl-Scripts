@@ -37,7 +37,7 @@ proc run {ofile id {from "CZ"}} {
 	}
 	close $outU
 	set counter 1
-	foreach chainI $Lchains chainJ {
+	foreach chainI $Lchains chainJ $LJchains {
 		puts $outL "Chain:\t$chainI"
 		set DiHeIn {}
 		foreach name $DiHe {
