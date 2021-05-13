@@ -2,7 +2,7 @@ source ~/Scripts/TCL/Tcl-Scripts/auto-ionz-IN.tcl
 proc average {list} {
 	    expr {[tcl::mathop::+ {*}$list 0.0] / max(1, [llength $list])}
     }
-proc run {ofile id from} {
+proc run {ofile id {from "CZ"}} {
 	set outU [open $ofile.U.obs w]
 	set outL [open $ofile.L.obs w]
 	set Uchains [list A B C D E F]
@@ -23,7 +23,7 @@ proc run {ofile id from} {
 		}
 		set sel1 [atomselect top "protein and chain $chainI and ((resid 3 and name CG) or (resid 5 and name HG1))"]
 		set D3S5In [$sel1 get index]
-		set sel2 [atomselect top "(protein and chain $chainI and resid 9 and name $from) or (protein and chain $chainJ and resid 12 and name CG)"]
+		set sel2 [atomselect top "(protein and chain $chainI and resid 9 and name $from) or (protein and chain $chainJ and resid 12 and name CD)"]
 		set RN9E12In [$sel2 get index]
 		$sel1 delete
 		$sel2 delete
