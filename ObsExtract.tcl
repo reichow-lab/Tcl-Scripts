@@ -2,7 +2,7 @@ source ~/Scripts/TCL/Tcl-Scripts/auto-ionz-IN.tcl
 proc average {list} {
 	    expr {[tcl::mathop::+ {*}$list 0.0] / max(1, [llength $list])}
     }
-proc run {ofile id {from "CZ"}} {
+proc run {ofile id from} {
 	set outU [open $ofile.U.obs w]
 	set outL [open $ofile.L.obs w]
 	set Uchains [list A B C D E F]
