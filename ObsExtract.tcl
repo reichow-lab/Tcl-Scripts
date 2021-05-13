@@ -23,7 +23,7 @@ proc run {ofile id {from "CZ"}} {
 		}
 		set sel1 [atomselect top "protein and chain $chainI and ((resid 3 and name CG) or (resid 5 and name HG1))"]
 		set D3S5In [$sel1 get index]
-		set sel2 [atomselect top "(protein and chain $chainI and resid 9 and name $from) or (protein and chain $chainJ and resid 12 and name CG)"]
+		set sel2 [atomselect top "(protein and chain $chainI and resid 9 and name $from) or (protein and chain $chainJ and resid 12 and name CD)"]
 		set RN9E12In [$sel2 get index]
 		$sel1 delete
 		$sel2 delete
