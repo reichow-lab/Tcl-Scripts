@@ -5,10 +5,10 @@ proc average {list} {
 proc run {ofile id {from "CZ"}} {
 	set outU [open $ofile.U.obs w]
 	set outL [open $ofile.L.obs w]
-	set Uchains [list A B C D E F]
-	set Lchains [list G H I J K L]
-	set UJchains [list B C D E F A]
-	set LJchains [list H I J K L G]
+	set Lchains [list A B C D E F]
+	set Uchains [list G H I J K L]
+	set LJchains [list B C D E F A]
+	set UJchains [list H I J K L G]
 	set DiHe [list N CA C O]
 	align $id $id
 	set numf [molinfo top get numframes]
