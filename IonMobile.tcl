@@ -33,7 +33,7 @@ proc imob {ION WS outname} {
 		set numF [molinfo top get numframes]
 		for {set j 0} {$j < $numF} {incr j} {
 			animate goto $j
-			set protz [lindex [measure center $protz] 2]
+			set protz [lindex [measure center $protmd] 2]
 			# Select ions in the current bin
 			set ionlist [atomselect top "segname ION and name $ION and (z > [expr $zmin + ($WS * $i) - $protz] and z < [expr $zmin + ($WS * ($i + 1) - $protz)])"]
 			set indlist [$ionlist get index]
