@@ -18,7 +18,7 @@ proc imob {ION WS outname} {
 	#align 0 $ID
 	set protref [atomselect 0 protein]
 	set protmd [atomselect top protein]
-	set protzref [lindex [measure center $protzref] 2]
+	set protzref [lindex [measure center $protref] 2]
 	# set the system size and subdivide into windows
 	set ref [atomselect 0 "all"]
 	set sys [atomselect top "all"]
