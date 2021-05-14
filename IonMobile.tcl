@@ -15,10 +15,9 @@ proc imob {ION WS outname} {
 	set zlim [expr $zcorr / 1.4]
 	set sDlim [expr $sDcorr / 1.4]
 	set lDlim [expr $lDcorr / 1.4]
-	#align 0 $ID
-	set protref [atomselect 0 protein]
-	set protmd [atomselect top protein]
-	set protzref [lindex [measure center $protref] 2]
+	align 0 $ID
+	set prot [atomselect $ID protein]
+	set protz [lindex [measure center $prot] 2]
 	# set the system size and subdivide into windows
 	set ref [atomselect 0 "all"]
 	set sys [atomselect top "all"]
@@ -28,12 +27,11 @@ proc imob {ION WS outname} {
 	set out [open $outname.txt w]
 	# loop through windows
 	for {set i 0} {$i <= $WN} {incr i} {
-		puts $out "BinCenter:\t[expr ((($zmin + ($WS * $i)) + ($zmin + ($WS * ($i + 1)))) / 2) - $protzref]"
+		puts $out "BinCenter:\t[expr ((($zmin + ($WS * $i)) + ($zmin + ($WS * ($i + 1)))) / 2) - $protz]"
 		# loop through frames
 		set numF [molinfo top get numframes]
 		for {set j 0} {$j < $numF} {incr j} {
 			animate goto $j
-			set protz [lindex [measure center $protmd] 2]
 			# Select ions in the current bin
 			set ionlist [atomselect top "segname ION and name $ION and (z > [expr $zmin + ($WS * $i) - $protz] and z < [expr $zmin + ($WS * ($i + 1) - $protz)])"]
 			set indlist [$ionlist get index]
