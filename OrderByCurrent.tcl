@@ -13,6 +13,7 @@ proc orderbycurrent {TextIN PSFin DCDinList peaklist outname st} {
   # Generate list of Bins. BINS is initialized with the min and max bins, middle
   # bins are added in the next loop
   set BINS "{} {}"
+  set BinN
   for {set i 1} {$i < [expr [llength $peakFROM] - 1]} {incr i} {
     lappend BinN $i
     lappend BINS ""
