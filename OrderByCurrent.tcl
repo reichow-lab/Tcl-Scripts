@@ -32,9 +32,11 @@ proc orderbycurrent {TextIN PSFin DCDinList peaklist outname st} {
           lset BINS 0 end+1 [expr int([lindex $line 0])]
           puts "debug-1"
         } elseif {([lindex $line 1] > $from) && ([lindex $line 1] <= $to)} {
+          puts "debug-1.5"
           lset BINS $bin end+1 [expr int([lindex $line 0])]
           puts "debug-2"
         } elseif {[lindex $line 1] > [lindex $peakTO [expr [llength $peakTO] - 1]} {
+          puts "debug-2.5"
           lset BINS [expr [llength $BINS] - 1] end+1 [expr int([lindex $line 0])]
           puts "debug-3"
         }
