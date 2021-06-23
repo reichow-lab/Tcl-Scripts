@@ -47,14 +47,12 @@ proc orderbycurrent {TextIN PSFin DCDinList peaklist outname st} {
     foreach dcd $DCDinList {
       mol addfile $dcd step $st waitfor all
     }
-    puts "[molinfo top get numframes]"
     set numframes [molinfo top get numframes]
     for {set i [expr $numframes -1]} {$i >= 0} {incr i -1} {
       animate goto $i
-      if {[lsearch $Bin $i] >= 0} {continue
+      if {[lsearch [lindex $Bin 0] $i] >= 0} {continue
   		} else {animate delete beg $i end $i top}
     }
-    puts "[molinfo top get numframes]"
     set all [atomselect top all]
     animate write dcd $outname.Bin$b.dcd beg 0 end -1 waitfor all sel $all top
     mol delete top
