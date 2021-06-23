@@ -27,7 +27,7 @@ proc orderbycurrent {TextIN PSFin DCDinList peaklist outname st} {
           lappend Bin_0 [expr int([lindex $line 0])]
         } elseif {([lindex $line 1] > $from) && ([lindex $line 1] <= $to)} {
           lappend Bin_$bin [expr int([lindex $line 0])]
-        } elseif {[lindex $line 1] > [lindex $peakTO [expr [llength $peakTO] - 1]} {
+        } elseif {[lindex $line 1] > [lindex $peakTO [expr [llength $peakTO] - 1]]} {
           lappend Bin_[expr [llength $peaklist] - 1] [expr int([lindex $line 0])]
         }
       }
