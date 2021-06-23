@@ -14,10 +14,12 @@ proc orderbycurrent {TextIN PSFin DCDinList peaklist outname st} {
   # bins are added in the next loop
   set BINS "{} {}"
   set BinN ""
+  puts "debug-1"
   for {set i 1} {$i < [expr [llength $peakFROM] - 1]} {incr i} {
     lappend BinN $i
     lappend BINS ""
   }
+  puts "debug-2"
   # generate list of frames and their assignments
   foreach from $peakFROM to $peakTO bin $BinN {
     foreach line $DATA {
@@ -32,6 +34,7 @@ proc orderbycurrent {TextIN PSFin DCDinList peaklist outname st} {
       }
     }
   }
+  puts "debug-3"
   # sort bin lists to remove redundant frame-IDs
   for {set i 0} {$i < [llength $BINS]} {incr i} {
     lappend BINSort [lreplace $BINS 0 [expr [llength $BINS] - 1] [lsort -unique [lindex $BINS $i]]]
