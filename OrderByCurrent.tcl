@@ -53,6 +53,7 @@ proc orderbycurrent {TextIN PSFin DCDinList peaklist outname st} {
       if {[lsearch $Bin $i] >= 0} {continue
   		} else {animate delete beg $i end $i top}
     }
+    puts "[molinfo top get numframes]"
     set all [atomselect top all]
     animate write dcd $outname.Bin$b.dcd beg 0 end -1 waitfor all sel $all top
     mol delete top
