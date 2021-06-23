@@ -48,6 +48,7 @@ proc gapwatflux {outfile dt} {
   set out [open $outfile.txt w]
   set i 1
   puts $out "Time(ns)\tz = 45\tz = 30\tz = 0\tz = -30\tz = -45"
+  puts $out "0\t0\t0\t0\t0\t0"
   foreach z1 $Z1 z2 $Z2 z3 $Z3 z4 $Z4 z5 $Z5 {
     set t [expr $i * $dt]
     puts $out "$t\t$z1\t$z2\t$z3\t$z4\t$z5"

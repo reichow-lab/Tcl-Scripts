@@ -16,7 +16,8 @@ proc imob {ION WS outname} {
 	set sDlim [expr $sDcorr / 1.4]
 	set lDlim [expr $lDcorr / 1.4]
 	align 0 $ID
-	set protz [lindex [measure center [atomselect top protein]] 2]
+	set prot [atomselect $ID protein]
+	set protz [lindex [measure center $prot] 2]
 	# set the system size and subdivide into windows
 	set ref [atomselect 0 "all"]
 	set sys [atomselect top "all"]
@@ -63,7 +64,7 @@ proc imob {ION WS outname} {
 				unset posZ1 posX1 posY1 posZ2 posX2 posY2 distZ distX distY
 				$ion delete
 			}
-			unset indlist 
+			unset indlist
 			$ionlist delete
 		}
 	}
