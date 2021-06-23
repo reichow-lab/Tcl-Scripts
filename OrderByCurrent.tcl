@@ -20,6 +20,8 @@ proc orderbycurrent {TextIN PSFin DCDinList peaklist outname st} {
   }
   puts $BinN
   puts $BINS
+  puts $peakFROM
+  puts $peakTO
   # generate list of frames and their assignments
   foreach from $peakFROM to $peakTO bin $BinN {
     foreach line $DATA {
