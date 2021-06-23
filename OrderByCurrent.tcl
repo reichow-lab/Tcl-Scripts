@@ -26,6 +26,7 @@ proc orderbycurrent {TextIN PSFin DCDinList peaklist outname st} {
   foreach from $peakFROM to $peakTO bin $BinN {
     foreach line $DATA {
       if {[string is double -strict [lindex $line 1]]} {
+        puts "debug-1"
         if {[lindex $line 1] <= [expr [lindex $peakFROM 0]]} {
           lset BINS 0 end+1 [expr int([lindex $line 0])]
         } elseif {([lindex $line 1] > $from) && ([lindex $line 1] <= $to)} {
@@ -33,6 +34,7 @@ proc orderbycurrent {TextIN PSFin DCDinList peaklist outname st} {
         } elseif {[lindex $line 1] > [lindex $peakTO [expr [llength $peakTO] - 1]} {
           lset BINS [expr [llength $BINS] - 1] end+1 [expr int([lindex $line 0])]
         }
+        puts "debug-2"
       }
     }
   }
