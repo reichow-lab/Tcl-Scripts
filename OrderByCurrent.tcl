@@ -11,9 +11,8 @@ proc orderbycurrent {TextIN PSFin DCDinList peaklist outname st} {
   # peakFROM and peakTO are the boundaries between "current-states", and allow
   # for an arbitrary number of "current-states" than simply min mid & max
   # Generate a number of Bins.
-  set BinN ""
+  set BinN "1 2"
   for {set i 0} {$i <= 3} {incr i} {
-    lappend BinN $i
     set Bin_$i ""
   }
   puts $BinN
@@ -28,12 +27,11 @@ proc orderbycurrent {TextIN PSFin DCDinList peaklist outname st} {
         } elseif {([lindex $line 1] > $from) && ([lindex $line 1] <= $to)} {
           lappend Bin_$bin [expr int([lindex $line 0])]
         } elseif {[lindex $line 1] > [lindex $peakTO [expr [llength $peakTO] - 1]]} {
-          lappend Bin_[expr [llength $peaklist] - 1] [expr int([lindex $line 0])]
+          lappend Bin_3 [expr int([lindex $line 0])]
         }
       }
     }
   }
-  puts "debug-4"
   set BINS [list $Bin_0 $Bin_1 $Bin_2 $Bin_3]
   # sort bin lists to remove redundant "" frame-IDs
   for {set i 0} {$i < [llength $BINS]} {incr i} {
