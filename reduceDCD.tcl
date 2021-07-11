@@ -10,6 +10,6 @@ proc reduce {DCDlist PSFin InitFrameStep FinalFrameStep} {
     animate write dcd $dcd.10ps.dcd beg 0 end -1 waitfor all sel [atomselect top all] $i
     incr i
     mol delete top
-    file delete $dcd
+    #file delete $dcd
   }
 }
