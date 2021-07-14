@@ -3,12 +3,10 @@ puts "create a list of dcd's that you want processed."
 proc reduce {DCDlist PSFin InitFrameStep FinalFrameStep} {
   # calculate step-size needed to get to 10ps/frame
   set stride [expr $FinalFrameStep/$InitFrameStep]
-  set i [molinfo top]
   foreach dcd $DCDlist {
     mol new $PSFin
     mol addfile $dcd step $stride waitfor all
-    animate write dcd $dcd.10ps.dcd beg 0 end -1 waitfor all sel [atomselect top all] $i
-    incr i
+    animate write dcd $dcd.10ps.dcd beg 0 end -1 waitfor all sel [atomselect top all] [molinfo top]
     mol delete top
     file delete $dcd
   }
